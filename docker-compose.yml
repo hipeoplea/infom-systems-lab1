@@ -3,9 +3,9 @@ services:
   pg:
     image: postgres:15
     environment:
-      POSTGRES_DB: studs
-      POSTGRES_USER: studs
-      POSTGRES_PASSWORD: studs
+      POSTGRES_DB: ${DB_USER}
+      POSTGRES_USER: ${DB_PASS}
+      POSTGRES_PASSWORD: ${DB_NAME}
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
