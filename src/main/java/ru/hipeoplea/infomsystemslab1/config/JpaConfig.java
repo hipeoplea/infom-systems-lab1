@@ -9,9 +9,6 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Configuration
 @EnableJpaRepositories(basePackages = "ru.hipeoplea.infomsystemslab1.repository")
 public class JpaConfig {
@@ -26,14 +23,6 @@ public class JpaConfig {
         factory.setDataSource(dataSource);
         factory.setJpaVendorAdapter(vendorAdapter);
         factory.setPackagesToScan("ru.hipeoplea.infomsystemslab1.models");
-
-        Map<String, Object> props = new HashMap<>();
-        props.put("eclipselink.weaving", "false");
-        props.put("eclipselink.logging.level", "INFO");
-        props.put("eclipselink.target-database", "PostgreSQL");
-        props.put("jakarta.persistence.schema-generation.database.action", "none"); // или create/update по необходимости
-        factory.setJpaPropertyMap(props);
-
         return factory;
     }
 
