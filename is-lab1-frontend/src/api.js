@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 
-const BASE = import.meta.env.VITE_API_BASE || `${(import.meta.env.BASE_URL || '/').replace(/\/$/, '')}/api`
+const BASE = 'localhost/api'
 
 
 export const api = axios.create({ baseURL: BASE, withCredentials: true })
