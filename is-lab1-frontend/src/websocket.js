@@ -1,5 +1,6 @@
 export function createWS(onMessage){
-    const url = (import.meta.env.VITE_WS_URL) || `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`
+    const prefix = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
+    const url = (import.meta.env.VITE_WS_URL) || `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}${prefix}/ws`
     const ws = new WebSocket(url)
     ws.onopen = () => console.log('ws open')
     ws.onmessage = (ev) => {
