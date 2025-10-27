@@ -58,27 +58,23 @@ public class MovieController {
     }
 
     private String sanitizeSort(String sortBy) {
-        // Whitelist of sortable fields to avoid invalid sort paths
         return switch (sortBy) {
             case "id", "name", "goldenPalmCount", "usaBoxOffice", "length", "totalBoxOffice", "budget", "creationDate", "genre", "mpaaRating" -> sortBy;
             default -> "id";
         };
     }
 
-    // UPDATE
     @PutMapping("/{id}")
     public Movie update(@PathVariable Long id, @RequestBody Movie movie) {
         return movieService.update(id, movie);
     }
 
-    // DELETE
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         movieService.delete(id);
     }
 
-    // Примеры кастомных методов
     @GetMapping("/count/golden-palms/{count}")
     public long countByGoldenPalm(@PathVariable Long count) {
         return movieService.countByGoldenPalmCount(count);
