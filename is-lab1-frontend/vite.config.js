@@ -4,7 +4,6 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
-// https://vite.dev/config/
 export default defineConfig({
   base: '/~s409829/',
   plugins: [
@@ -20,11 +19,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://localhost:8081',
         changeOrigin: true,
       },
       '/ws': {
-        target: 'ws://localhost:8080',
+        target: 'ws://localhost:8081',
         ws: true,
       }
     }
