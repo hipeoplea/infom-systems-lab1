@@ -65,7 +65,7 @@ export default {
   setup(props, { emit }){
     const items = ref([])
     const page = ref(1)
-    const pageSize = ref(10)
+    const pageSize = ref(5)
     const total = ref(0)
     const totalPages = ref(1)
     const filter = ref('')
@@ -91,7 +91,7 @@ export default {
           totalPages.value = Math.max(1, Math.ceil(data.total / pageSize.value))
         }
       } catch (e) {
-        emit('error', e.response?.data || e.message)
+        emit('error', e.response?.data?.message || e.message)
       }
     }
 
@@ -102,7 +102,7 @@ export default {
       try {
         await deleteOne(props.resource, id)
         await load()
-      } catch (e) { emit('error', e.response?.data || e.message) }
+      } catch (e) { emit('error', e.response?.data?.message || e.message) }
     }
 
     const format = (item, col) => {
@@ -117,4 +117,3 @@ export default {
   }
 }
 </script>
-

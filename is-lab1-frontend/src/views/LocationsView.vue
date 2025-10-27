@@ -54,7 +54,7 @@ export default {
     const onEdit = (id) => { formMode.value = 'edit'; editingId.value = id; formVisible.value = true }
     const closeForm = () => formVisible.value = false
     const onSaved = async () => { formVisible.value = false; tableRef.value?.load?.(); toast.value = 'Сохранено'; setTimeout(()=>toast.value='',2000) }
-    const onError = (err) => { toast.value = typeof err === 'string' ? err : JSON.stringify(err); setTimeout(()=>toast.value='',4000) }
+    const onError = (err) => { toast.value = typeof err === 'string' ? err : (err?.message || String(err)); setTimeout(()=>toast.value='',4000) }
 
     const ws = createWS((msg)=>{
       if (tableRef.value && tableRef.value.load) tableRef.value.load()

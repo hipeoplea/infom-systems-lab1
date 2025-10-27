@@ -6,10 +6,13 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.hipeoplea.infomsystemslab1.models.Movie;
+import ru.hipeoplea.infomsystemslab1.models.MovieGenre;
+import ru.hipeoplea.infomsystemslab1.models.MpaaRating;
 
 import java.util.List;
 
@@ -31,4 +34,15 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             "   or lower(s.name) like lower(concat('%', :q, '%')) " +
             "   or lower(o.name) like lower(concat('%', :q, '%'))")
     Page<Movie> search(@Param("q") String q, Pageable pageable);
+
+    @Query("select distinct m.director.id from Movie m where m.genre = :genre and m.director is not null")
+    List<Long> findDirectorIdsByGenre(@Param("genre") MovieGenre genre);
+
+    @Modifying
+    @Query("update Movie m set m.oscarsCount = 0 where m.director.id in :directorIds")
+    int resetOscarsByDirectorIds(@Param("directorIds") List<Long> directorIds);
+
+    @Modifying
+    @Query("update Movie m set m.oscarsCount = coalesce(m.oscarsCount, 0) + 1 where m.mpaaRating = :rating")
+    int incrementOscarsByRating(@Param("rating") MpaaRating rating);
 }

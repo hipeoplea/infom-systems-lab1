@@ -40,11 +40,7 @@ public class OpsController {
     @ResponseStatus(HttpStatus.OK)
     @Transactional
     public void addOscarToR() {
-        List<Movie> rs = movieRepository.findAll().stream()
-                .filter(m -> m.getMpaaRating() == MpaaRating.R)
-                .toList();
-        rs.forEach(m -> m.setOscarsCount((m.getOscarsCount() == null ? 0L : m.getOscarsCount()) + 1));
-        movieRepository.saveAll(rs);
+        movieRepository.incrementOscarsByRating(MpaaRating.R);
     }
 
     @PostMapping("/removeOscarsByDirectorsGenre")
@@ -52,19 +48,10 @@ public class OpsController {
     @Transactional
     public void removeOscarsByDirectorsGenre(@RequestBody ParamGenre payload) {
         MovieGenre genre = MovieGenre.valueOf(payload.genre);
-        // Find directors who shot at least one movie in the given genre
-        Set<Long> directorIds = movieRepository.findAll().stream()
-                .filter(m -> m.getGenre() == genre && m.getDirector() != null)
-                .map(m -> m.getDirector().getId())
-                .collect(Collectors.toSet());
-        // Remove all oscars from all movies of those directors
-        List<Movie> affected = movieRepository.findAll().stream()
-                .filter(m -> m.getDirector() != null && directorIds.contains(m.getDirector().getId()))
-                .toList();
-        affected.forEach(m -> m.setOscarsCount(0L));
-        movieRepository.saveAll(affected);
+        List<Long> directorIds = movieRepository.findDirectorIdsByGenre(genre);
+        if (directorIds == null || directorIds.isEmpty()) return;
+        movieRepository.resetOscarsByDirectorIds(directorIds);
     }
 
     public record ParamGenre(String genre){}
 }
-

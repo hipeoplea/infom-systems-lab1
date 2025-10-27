@@ -28,10 +28,7 @@
         </thead>
         <tbody>
           <tr v-for="item in items" :key="item.id">
-            <td v-for="col in columns" :key="col" :data-label="col">
-              <template v-if="col==='creationDate'">{{ new Date(item[col]).toLocaleDateString() }}</template>
-              <template v-else>{{ item[col] }}</template>
-            </td>
+            <td v-for="col in columns" :key="col" :data-label="col">{{ format(item, col) }}</td>
             <td class="actions" data-label="Actions">
               <button class="btn btn-secondary" @click="$emit('view', item.id)">View</button>
               <button class="btn btn-secondary" @click="$emit('edit', item.id)">Edit</button>
@@ -40,6 +37,13 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <div style="display:flex; gap:8px; align-items:center; margin-top:12px">
+      <button class="btn" :disabled="page===1" @click="page--, load()">Prev</button>
+      <div>Page {{ page }} / {{ totalPages }}</div>
+      <button class="btn" :disabled="page>=totalPages" @click="page++, load()">Next</button>
+      <div class="small-muted">Total: {{ total }}</div>
     </div>
 
   </div>
@@ -52,7 +56,10 @@ import debounce from 'lodash/debounce'
 
 export default {
   name: 'ObjectTable',
-  props: { columns: { type: Array, required: true } },
+  props: {
+    columns: { type: Array, required: true },
+    formatters: { type: Object, default: () => ({}) }
+  },
   emits: ['view','edit','create','error'],
   setup(props, { emit }){
     const items = ref([])
@@ -73,11 +80,23 @@ export default {
           sortBy: sortBy.value,
           sortDir: sortDir.value
         })
-        items.value = data.items
-        total.value = data.total
-        totalPages.value = Math.max(1, Math.ceil(data.total / pageSize.value))
+        // Accept both array and {items,total}
+        if (Array.isArray(data)) {
+          items.value = data
+          total.value = data.length
+          totalPages.value = 1
+          page.value = 1
+        } else {
+          const arr = data.items || []
+          const tot = typeof data.total === 'number' ? data.total : arr.length
+          items.value = arr
+          total.value = tot
+          const pages = Math.ceil((tot || 0) / (pageSize.value || 1))
+          totalPages.value = Math.max(1, pages || 1)
+          if (page.value > totalPages.value) page.value = totalPages.value
+        }
       } catch (e) {
-        emit('error', e.response?.data || e.message)
+        emit('error', e.response?.data?.message || e.message)
       }
     }
 
@@ -89,12 +108,19 @@ export default {
       try {
         await deleteObject(id)
         await load()
-      } catch (e) { emit('error', e.response?.data || e.message) }
+      } catch (e) { emit('error', e.response?.data?.message || e.message) }
+    }
+
+    const format = (item, col) => {
+      const f = props.formatters[col]
+      if (typeof f === 'function') return f(item[col], item)
+      if (col === 'creationDate') return item[col] ? new Date(item[col]).toLocaleDateString() : ''
+      return item[col]
     }
 
     load()
 
-    return { items, page, pageSize, total, totalPages, filter, sortBy, sortDir, load, debouncedLoad, refresh, openCreate, remove }
+    return { items, page, pageSize, total, totalPages, filter, sortBy, sortDir, load, debouncedLoad, refresh, openCreate, remove, format }
   }
 }
 </script>

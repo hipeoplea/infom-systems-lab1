@@ -32,7 +32,7 @@ public class PersonController {
     @GetMapping
     public Object getAll(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "5") int pageSize,
             @RequestParam(required = false, defaultValue = "") String filter,
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortDir

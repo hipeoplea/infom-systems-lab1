@@ -59,8 +59,29 @@ public class PersonService {
     public void delete(Long id) {
         Person existing = personRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Person not found"));
-        personRepository.delete(existing);
+        try {
+            personRepository.delete(existing);
+        } catch (RuntimeException ex) {
+            if (isFkViolation(ex)) {
+                throw new ru.hipeoplea.infomsystemslab1.exeption.BadRequestException("Невозможно удалить: запись связана с фильмами или другими объектами");
+            }
+            throw ex;
+        }
         broadcastAfterCommit("deleted", id);
+    }
+
+    private boolean isFkViolation(Throwable t) {
+        Throwable cur = t;
+        while (cur != null) {
+            if (cur instanceof java.sql.SQLException sqlEx) {
+                String sqlState = sqlEx.getSQLState();
+                if ("23503".equals(sqlState)) return true;
+                String m = sqlEx.getMessage();
+                if (m != null && m.toLowerCase().contains("violates foreign key constraint")) return true;
+            }
+            cur = cur.getCause();
+        }
+        return false;
     }
 
     private void broadcastAfterCommit(String type, Long id) {

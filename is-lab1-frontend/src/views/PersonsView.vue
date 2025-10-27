@@ -64,10 +64,7 @@ export default {
       toast.value = 'Saved'
       setTimeout(()=>toast.value='',2000)
     }
-    const onError = (err) => {
-      toast.value = typeof err === 'string' ? err : JSON.stringify(err)
-      setTimeout(()=>toast.value='',4000)
-    }
+    const onError = (err) => { toast.value = typeof err === 'string' ? err : (err?.message || String(err)); setTimeout(()=>toast.value='',4000) }
 
     const toPayload = (f) => ({
       name: f.name,
@@ -93,7 +90,6 @@ export default {
       setTimeout(()=>toast.value='', 2000)
     })
 
-    // Load locations for select options
     ;(async () => {
       try {
         const data = await list('locations', { page: 1, pageSize: 1000 })
@@ -101,11 +97,10 @@ export default {
         const opts = items.map(l => ({ value: l.id, label: `${l.id}${l.name?': '+l.name:''}` }))
         const idx = fields.value.findIndex(f => f.key === 'locationId')
         if (idx >= 0) fields.value[idx] = { ...fields.value[idx], options: opts, nullable: true }
-      } catch (e) { /* ignore load errors; form will show no options */ }
+      } catch (e) {  }
     })()
 
     return { columns, fields, formVisible, formMode, editingId, onCreate, onEdit, closeForm, onSaved, onError, toast, tableRef, toPayload, fromEntity, formatters }
   }
 }
 </script>
-

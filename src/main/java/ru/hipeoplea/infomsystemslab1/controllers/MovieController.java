@@ -41,7 +41,6 @@ public class MovieController {
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortDir
     ) {
-        // Frontend sends 1-based page; convert to 0-based
         if (page < 1) throw new BadRequestException("page must be >= 1");
         if (pageSize < 1) throw new BadRequestException("pageSize must be >= 1");
         int p = Math.max(0, page - 1);

@@ -152,7 +152,6 @@ export default {
 
     watch(()=>props.id, load, { immediate:true })
 
-    // Load related entity options for dropdowns
     ;(async () => {
       try {
         const coords = await list('coordinates', { page: 1, pageSize: 1000 })
@@ -226,4 +225,3 @@ export default {
   }
 }
 </script>
-
