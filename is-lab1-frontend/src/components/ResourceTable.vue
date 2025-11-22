@@ -3,7 +3,12 @@
     <h1>{{ title }}</h1>
 
     <div class="card toolbar">
-      <input v-model="filter" class="input" :placeholder="placeholder" @input="debouncedLoad" />
+      <input
+        v-model="filter"
+        class="input"
+        :placeholder="placeholder"
+        @input="debouncedLoad"
+      />
       <select v-model="sortBy" @change="load">
         <option value="">-- sort by --</option>
         <option v-for="c in columns" :key="c" :value="c">{{ c }}</option>
@@ -13,7 +18,7 @@
         <option value="desc">desc</option>
       </select>
       <button class="btn btn-primary" @click="$emit('create')">Create</button>
-      <div style="margin-left:auto">
+      <div style="margin-left: auto">
         <button class="btn" @click="refresh">Refresh</button>
       </div>
     </div>
@@ -30,47 +35,59 @@
           <tr v-for="item in items" :key="item.id">
             <td v-for="col in columns" :key="col">{{ format(item, col) }}</td>
             <td>
-              <button class="btn btn-secondary" @click="$emit('edit', item.id)">Edit</button>
-              <button class="btn btn-danger" @click="remove(item.id)">Delete</button>
+              <button class="btn btn-secondary" @click="$emit('edit', item.id)">
+                Edit
+              </button>
+              <button class="btn btn-danger" @click="remove(item.id)">
+                Delete
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div style="display:flex; gap:8px; align-items:center; margin-top:12px">
-      <button class="btn" :disabled="page===1" @click="page--, load()">Prev</button>
+    <div style="display: flex; gap: 8px; align-items: center; margin-top: 12px">
+      <button class="btn" :disabled="page === 1" @click="(load(), page--)">
+        Prev
+      </button>
       <div>Page {{ page }} / {{ totalPages }}</div>
-      <button class="btn" :disabled="page>=totalPages" @click="page++, load()">Next</button>
+      <button
+        class="btn"
+        :disabled="page >= totalPages"
+        @click="(page++, load())"
+      >
+        Next
+      </button>
       <div class="small-muted">Total: {{ total }}</div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
-import debounce from 'lodash/debounce'
-import { list, deleteOne } from '../api'
+import { ref } from "vue";
+import debounce from "lodash/debounce";
+import { list, deleteOne } from "../api";
 
 export default {
-  name: 'ResourceTable',
+  name: "ResourceTable",
   props: {
     resource: { type: String, required: true },
     columns: { type: Array, required: true },
-    title: { type: String, default: '' },
-    placeholder: { type: String, default: 'Search' },
-    formatters: { type: Object, default: () => ({}) }
+    title: { type: String, default: "" },
+    placeholder: { type: String, default: "Search" },
+    formatters: { type: Object, default: () => ({}) },
   },
-  emits: ['create','edit','error'],
-  setup(props, { emit }){
-    const items = ref([])
-    const page = ref(1)
-    const pageSize = ref(5)
-    const total = ref(0)
-    const totalPages = ref(1)
-    const filter = ref('')
-    const sortBy = ref('')
-    const sortDir = ref('asc')
+  emits: ["create", "edit", "error"],
+  setup(props, { emit }) {
+    const items = ref([]);
+    const page = ref(1);
+    const pageSize = ref(5);
+    const total = ref(0);
+    const totalPages = ref(1);
+    const filter = ref("");
+    const sortBy = ref("");
+    const sortDir = ref("asc");
 
     const load = async () => {
       try {
@@ -79,41 +96,63 @@ export default {
           pageSize: pageSize.value,
           filter: filter.value,
           sortBy: sortBy.value,
-          sortDir: sortDir.value
-        })
+          sortDir: sortDir.value,
+        });
         if (Array.isArray(data)) {
-          items.value = data
-          total.value = data.length
-          totalPages.value = 1
+          items.value = data;
+          total.value = data.length;
+          totalPages.value = 1;
         } else {
-          items.value = data.items
-          total.value = data.total
-          totalPages.value = Math.max(1, Math.ceil(data.total / pageSize.value))
+          items.value = data.items;
+          total.value = data.total;
+          totalPages.value = Math.max(
+            1,
+            Math.ceil(data.total / pageSize.value),
+          );
         }
       } catch (e) {
-        emit('error', e.response?.data?.message || e.message)
+        emit("error", e.response?.data?.message || e.message);
       }
-    }
+    };
 
-    const debouncedLoad = debounce(() => { page.value = 1; load() }, 350)
-    const refresh = () => load()
+    const debouncedLoad = debounce(() => {
+      page.value = 1;
+      load();
+    }, 350);
+    const refresh = () => load();
     const remove = async (id) => {
-      if (!confirm('Delete item?')) return
+      if (!confirm("Delete item?")) return;
       try {
-        await deleteOne(props.resource, id)
-        await load()
-      } catch (e) { emit('error', e.response?.data?.message || e.message) }
-    }
+        await deleteOne(props.resource, id);
+        await load();
+      } catch (e) {
+        emit("error", e.response?.data?.message || e.message);
+      }
+    };
 
     const format = (item, col) => {
-      const f = props.formatters[col]
-      if (typeof f === 'function') return f(item[col], item)
-      return item[col]
-    }
+      const f = props.formatters[col];
+      if (typeof f === "function") return f(item[col], item);
+      return item[col];
+    };
 
-    load()
+    load();
 
-    return { items, page, pageSize, total, totalPages, filter, sortBy, sortDir, load, debouncedLoad, refresh, remove, format }
-  }
-}
+    return {
+      items,
+      page,
+      pageSize,
+      total,
+      totalPages,
+      filter,
+      sortBy,
+      sortDir,
+      load,
+      debouncedLoad,
+      refresh,
+      remove,
+      format,
+    };
+  },
+};
 </script>
