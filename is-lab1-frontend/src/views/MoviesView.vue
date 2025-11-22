@@ -13,9 +13,9 @@
       </div>
     </div>
 
-    <ObjectTable :columns="columns" :formatters="formatters" @view="onView" @edit="onEdit" @create="onCreate" @error="onError" ref="tableRef" />
+    <ObjectTable ref="tableRef" :columns="columns" :formatters="formatters" @view="onView" @edit="onEdit" @create="onCreate" @error="onError" />
 
-    <ObjectForm v-if="formVisible" :mode="formMode" :id="editingId" @saved="onSaved" @close="closeForm" @error="onError" />
+    <ObjectForm v-if="formVisible" :id="editingId" :mode="formMode" @saved="onSaved" @close="closeForm" @error="onError" />
     <ObjectDetail v-if="detailVisible" :id="detailId" @close="closeDetail" />
 
     <div v-if="toast" class="toast">{{toast}}</div>

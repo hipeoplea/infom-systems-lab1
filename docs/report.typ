@@ -31,8 +31,8 @@
         *Преподаватель:* \
         Тюрин Иван Николаевич \
         #v(2mm)
-        *Выполнил:* \
-        Федоров Евгений Константинович \
+        *Выполнилa:* \
+        Черемисова Мария Александровна \
         #v(2mm)
         *Группа:* P3310
       ])
@@ -161,11 +161,11 @@ public enum Country {
 = UML-диаграммы классов и пакетов разработанного приложения
 
 #figure(
-  image("classes.png", width: 130%)
+  image("class-diagram.drawio.png", width: 130%)
 )
 
 #figure(
-  image("packages.png", width: 100%)
+  image("IS1.packeges.png", width: 100%)
 )
 
 #pagebreak()

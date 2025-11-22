@@ -3,7 +3,7 @@
     <h1>{{ title }}</h1>
 
     <div class="card toolbar">
-      <input class="input" v-model="filter" :placeholder="placeholder" @input="debouncedLoad" />
+      <input v-model="filter" class="input" :placeholder="placeholder" @input="debouncedLoad" />
       <select v-model="sortBy" @change="load">
         <option value="">-- sort by --</option>
         <option v-for="c in columns" :key="c" :value="c">{{ c }}</option>

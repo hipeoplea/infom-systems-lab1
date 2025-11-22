@@ -2,24 +2,24 @@
 <template>
   <div>
     <ResourceTable
+      ref="tableRef"
       resource="coordinates"
       title="Координаты"
       :columns="columns"
       @create="onCreate"
       @edit="onEdit"
       @error="onError"
-      ref="tableRef"
     />
 
     <ResourceForm
       v-if="formVisible"
+      :id="editingId"
       resource="coordinates"
       title="координаты"
       :fields="fields"
       :mode="formMode"
-      :id="editingId"
-      :toPayload="(f)=>f"
-      :fromEntity="(e)=>({ x: e.x, y: e.y })"
+      :to-payload="(f)=>f"
+      :from-entity="(e)=>({ x: e.x, y: e.y })"
       @saved="onSaved"
       @close="closeForm"
       @error="onError"

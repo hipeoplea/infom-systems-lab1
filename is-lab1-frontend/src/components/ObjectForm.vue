@@ -6,7 +6,7 @@
       <div class="form-grid">
         <div class="form-field">
           <label>Name</label>
-          <input class="input" v-model="form.name" />
+          <input v-model="form.name" class="input" />
           <div v-if="errors.name" class="error">{{errors.name}}</div>
         </div>
 
@@ -26,38 +26,38 @@
 
         <div class="form-field">
           <label>Length (min)</label>
-          <input class="input" type="number" v-model.number="form.length" />
+          <input v-model.number="form.length" class="input" type="number" />
         </div>
 
         <div class="form-field">
           <label>Budget</label>
-          <input class="input" type="number" step="0.01" v-model.number="form.budget" />
+          <input v-model.number="form.budget" class="input" type="number" step="0.01" />
         </div>
 
         <div class="form-field">
           <label>Total Box Office</label>
-          <input class="input" type="number" v-model.number="form.totalBoxOffice" />
+          <input v-model.number="form.totalBoxOffice" class="input" type="number" />
         </div>
 
         <div class="form-field">
           <label>USA Box Office</label>
-          <input class="input" type="number" v-model.number="form.usaBoxOffice" />
+          <input v-model.number="form.usaBoxOffice" class="input" type="number" />
         </div>
 
         <div class="form-field">
           <label>Golden Palm Count</label>
-          <input class="input" type="number" v-model.number="form.goldenPalmCount" />
+          <input v-model.number="form.goldenPalmCount" class="input" type="number" />
           <div v-if="errors.goldenPalmCount" class="error">{{errors.goldenPalmCount}}</div>
         </div>
 
         <div class="form-field">
           <label>Oscars Count</label>
-          <input class="input" type="number" v-model.number="form.oscarsCount" />
+          <input v-model.number="form.oscarsCount" class="input" type="number" />
         </div>
 
         <div class="form-field" style="grid-column:1/3">
           <label>Coordinates</label>
-          <select class="input" v-model="ids.coordinatesId">
+          <select v-model="ids.coordinatesId" class="input">
             <option v-for="c in coordinatesOptions" :key="c.value" :value="c.value">{{ c.label }}</option>
           </select>
           <div v-if="errors.coordinatesId" class="error">{{errors.coordinatesId}}</div>
@@ -65,7 +65,7 @@
 
         <div class="form-field">
           <label>Director</label>
-          <select class="input" v-model="ids.directorId">
+          <select v-model="ids.directorId" class="input">
             <option v-for="p in personsOptions" :key="p.value" :value="p.value">{{ p.label }}</option>
           </select>
           <div v-if="errors.directorId" class="error">{{errors.directorId}}</div>
@@ -73,7 +73,7 @@
 
         <div class="form-field">
           <label>Screenwriter</label>
-          <select class="input" v-model="ids.screenwriterId">
+          <select v-model="ids.screenwriterId" class="input">
             <option :value="null">--</option>
             <option v-for="p in personsOptions" :key="p.value" :value="p.value">{{ p.label }}</option>
           </select>
@@ -81,7 +81,7 @@
 
         <div class="form-field">
           <label>Operator</label>
-          <select class="input" v-model="ids.operatorId">
+          <select v-model="ids.operatorId" class="input">
             <option v-for="p in personsOptions" :key="p.value" :value="p.value">{{ p.label }}</option>
           </select>
           <div v-if="errors.operatorId" class="error">{{errors.operatorId}}</div>

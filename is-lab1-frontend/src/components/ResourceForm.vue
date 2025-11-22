@@ -4,10 +4,10 @@
       <h3>{{ mode === 'create' ? `Create ${title}` : `Edit ${title}` }}</h3>
 
       <div class="form-grid">
-        <div class="form-field" v-for="f in fields" :key="f.key" :style="f.full ? 'grid-column:1/3' : ''">
+        <div v-for="f in fields" :key="f.key" class="form-field" :style="f.full ? 'grid-column:1/3' : ''">
           <label>{{ f.label }}</label>
           <template v-if="f.type==='select'">
-            <select class="input" v-model="form[f.key]">
+            <select v-model="form[f.key]" class="input">
               <option v-if="f.nullable" :value="null">--</option>
               <option v-for="opt in (f.options||[])" :key="isObj(opt)?opt.value:opt" :value="isObj(opt)?opt.value:opt">
                 {{ isObj(opt) ? opt.label : opt }}

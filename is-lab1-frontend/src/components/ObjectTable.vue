@@ -3,7 +3,7 @@
     <h1>Objects</h1>
 
     <div class="card toolbar">
-      <input class="input" v-model="filter" placeholder="Search (supports partial match)" @input="debouncedLoad" />
+      <input v-model="filter" class="input" placeholder="Search (supports partial match)" @input="debouncedLoad" />
       <select v-model="sortBy" @change="load">
         <option value="">-- sort by --</option>
         <option v-for="c in columns" :key="c" :value="c">{{ c }}</option>
@@ -80,7 +80,6 @@ export default {
           sortBy: sortBy.value,
           sortDir: sortDir.value
         })
-        // Accept both array and {items,total}
         if (Array.isArray(data)) {
           items.value = data
           total.value = data.length

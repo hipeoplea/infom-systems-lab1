@@ -1,6 +1,7 @@
 <template>
   <div>
     <ResourceTable
+      ref="tableRef"
       resource="persons"
       title="Persons"
       :columns="columns"
@@ -8,18 +9,17 @@
       @create="onCreate"
       @edit="onEdit"
       @error="onError"
-      ref="tableRef"
     />
 
     <ResourceForm
       v-if="formVisible"
+      :id="editingId"
       resource="persons"
       title="Person"
       :fields="fields"
       :mode="formMode"
-      :id="editingId"
-      :toPayload="toPayload"
-      :fromEntity="fromEntity"
+      :to-payload="toPayload"
+      :from-entity="fromEntity"
       @saved="onSaved"
       @close="closeForm"
       @error="onError"
