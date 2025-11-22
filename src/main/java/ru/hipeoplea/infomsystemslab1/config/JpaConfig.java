@@ -15,7 +15,7 @@ public class JpaConfig {
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
-        var vendorAdapter = new EclipseLinkJpaVendorAdapter();
+        final var vendorAdapter = new EclipseLinkJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true);
         vendorAdapter.setShowSql(false);
 

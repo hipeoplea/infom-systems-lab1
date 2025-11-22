@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, onBeforeUnmount } from 'vue'
 import ResourceTable from '../components/ResourceTable.vue'
 import ResourceForm from '../components/ResourceForm.vue'
 import { createWS } from '../websocket'
@@ -89,6 +89,7 @@ export default {
       toast.value = `Event: ${msg.type} id=${msg.id}`
       setTimeout(()=>toast.value='', 2000)
     })
+    onBeforeUnmount(()=>ws?.close?.())
 
     ;(async () => {
       try {
@@ -97,7 +98,9 @@ export default {
         const opts = items.map(l => ({ value: l.id, label: `${l.id}${l.name?': '+l.name:''}` }))
         const idx = fields.value.findIndex(f => f.key === 'locationId')
         if (idx >= 0) fields.value[idx] = { ...fields.value[idx], options: opts, nullable: true }
-      } catch (e) {  }
+      } catch (e) {
+        onError(e)
+      }
     })()
 
     return { columns, fields, formVisible, formMode, editingId, onCreate, onEdit, closeForm, onSaved, onError, toast, tableRef, toPayload, fromEntity, formatters }

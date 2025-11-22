@@ -104,7 +104,7 @@ import { createObject, updateObject, fetchObject } from '../api'
 import { list } from '../api'
 
 export default {
-  props: { mode: { type: String, default: 'create' }, id: Number },
+  props: { mode: { type: String, default: 'create' }, id: { type: Number, default: null } },
   emits: ['saved','close','error'],
   setup(props, { emit }){
     const form = ref({
@@ -124,27 +124,35 @@ export default {
     const serverError = ref(null)
     const coordinatesOptions = ref([])
     const personsOptions = ref([])
+    const handleError = (error) => {
+      console.error(error)
+      emit('error', error)
+    }
 
     const load = async () => {
       if (props.mode === 'edit' && props.id) {
-        const data = await fetchObject(props.id)
-        form.value = {
-          name: data.name,
-          genre: data.genre,
-          mpaaRating: data.mpaaRating,
-          length: data.length ?? null,
-          budget: data.budget ?? null,
-          totalBoxOffice: data.totalBoxOffice ?? null,
-          usaBoxOffice: data.usaBoxOffice ?? null,
-          oscarsCount: data.oscarsCount ?? null,
-          goldenPalmCount: data.goldenPalmCount ?? null,
-          creationDate: data.creationDate ?? null,
-        }
-        ids.value = {
-          coordinatesId: data.coordinates?.id ?? null,
-          directorId: data.director?.id ?? null,
-          screenwriterId: data.screenwriter?.id ?? null,
-          operatorId: data.operator?.id ?? null,
+        try {
+          const data = await fetchObject(props.id)
+          form.value = {
+            name: data.name,
+            genre: data.genre,
+            mpaaRating: data.mpaaRating,
+            length: data.length ?? null,
+            budget: data.budget ?? null,
+            totalBoxOffice: data.totalBoxOffice ?? null,
+            usaBoxOffice: data.usaBoxOffice ?? null,
+            oscarsCount: data.oscarsCount ?? null,
+            goldenPalmCount: data.goldenPalmCount ?? null,
+            creationDate: data.creationDate ?? null,
+          }
+          ids.value = {
+            coordinatesId: data.coordinates?.id ?? null,
+            directorId: data.director?.id ?? null,
+            screenwriterId: data.screenwriter?.id ?? null,
+            operatorId: data.operator?.id ?? null,
+          }
+        } catch (e) {
+          handleError(e)
         }
       }
     }
@@ -157,12 +165,12 @@ export default {
         const coords = await list('coordinates', { page: 1, pageSize: 1000 })
         const coordsItems = Array.isArray(coords) ? coords : (coords.items || [])
         coordinatesOptions.value = coordsItems.map(c => ({ value: c.id, label: `${c.id}: (${c.x}, ${c.y})` }))
-      } catch(e) { /* ignore */ }
+      } catch(e) { handleError(e) }
       try {
         const persons = await list('persons', { page: 1, pageSize: 1000 })
         const personItems = Array.isArray(persons) ? persons : (persons.items || [])
         personsOptions.value = personItems.map(p => ({ value: p.id, label: `${p.id}${p.name?': '+p.name:''}` }))
-      } catch(e) { /* ignore */ }
+      } catch(e) { handleError(e) }
     })()
 
     const validate = () =>{
@@ -217,7 +225,10 @@ export default {
           })
         }
         emit('saved')
-      }catch(e){ serverError.value = e.response?.data?.message || e.message }
+      }catch(e){
+        serverError.value = e.response?.data?.message || e.message
+        handleError(e)
+      }
     }
 
     const enums = { genres: ['ADVENTURE','WESTERN','TRAGEDY','HORROR', 'SCIENCE_FICTION'].filter(Boolean), mpaa: ['G','PG','PG_13','R'] }

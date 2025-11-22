@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, onBeforeUnmount } from 'vue'
 import ResourceTable from '../components/ResourceTable.vue'
 import ResourceForm from '../components/ResourceForm.vue'
 import { createWS } from '../websocket'
@@ -61,6 +61,8 @@ export default {
       toast.value = `Event: ${msg.type} id=${msg.id}`
       setTimeout(()=>toast.value='',2000)
     })
+
+    onBeforeUnmount(()=>ws?.close?.())
 
     return { columns, fields, formVisible, formMode, editingId, onCreate, onEdit, closeForm, onSaved, onError, toast, tableRef }
   }

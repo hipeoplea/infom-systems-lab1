@@ -2,6 +2,7 @@
   <div class="modal">
     <div class="card">
       <h3>Детали фильма</h3>
+      <div v-if="errorMessage" class="error" style="margin-bottom:8px">{{ errorMessage }}</div>
       <div v-if="item">
         <div><strong>ID</strong> {{item.id}}</div>
         <div><strong>Название</strong> {{item.name}}</div>
@@ -37,15 +38,24 @@ import { fetchObject } from '../api'
 
 
 export default {
-  props: { id: Number },
+  props: { id: { type: Number, default: null } },
   emits: ['close','error'],
-  setup(props){
+  setup(props, { emit }){
     const item = ref(null)
+    const errorMessage = ref(null)
     const load = async () =>{
-      try{ item.value = await fetchObject(props.id) }catch(e){ console.error(e) }
+      if (!props.id) return
+      errorMessage.value = null
+      item.value = null
+      try{ item.value = await fetchObject(props.id) }
+      catch(e){
+        console.error(e)
+        errorMessage.value = e.response?.data?.message || e.message
+        emit('error', e)
+      }
     }
     watch(()=>props.id, load, { immediate:true })
-    return { item }
+    return { item, errorMessage }
   }
 }
 </script>

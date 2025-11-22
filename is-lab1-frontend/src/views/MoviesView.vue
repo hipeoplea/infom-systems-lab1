@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onBeforeUnmount } from 'vue'
 import ObjectTable from '../components/ObjectTable.vue'
 import ObjectForm from '../components/ObjectForm.vue'
 import ObjectDetail from '../components/ObjectDetail.vue'
@@ -66,6 +66,7 @@ export default {
       toast.value = `Событие: ${msg.type} id=${msg.id}`
       setTimeout(()=>toast.value='', 2500)
     })
+    onBeforeUnmount(()=>ws?.close?.())
 
     const onCreate = () => { formMode.value = 'create'; editingId.value = null; formVisible.value = true }
     const onEdit = (id) => { formMode.value = 'edit'; editingId.value = id; formVisible.value = true }
@@ -76,10 +77,36 @@ export default {
     const onError = (err) => { toast.value = typeof err === 'string' ? err : (err?.message || String(err)); setTimeout(()=>toast.value='',4000) }
 
     const runOps = {
-      uniqueGenres: async ()=>{ const res = await api.op_uniqueGenres(); toast.value = `Genres: ${res.join(', ')}` },
-      countGolden: async ()=>{ const v = prompt('Введите значение goldenPalmCount'); if(v!=null){ const res = await api.op_countGoldenPalm(parseInt(v)); toast.value = `Count = ${res}` } },
-      countUsaGreater: async ()=>{ const v = prompt('Введите порог USA boxOffice'); if(v!=null){ const res = await api.op_usaBoxOfficeGreater(parseInt(v)); toast.value = `Count = ${res}` } },
-      addOscarR: async ()=>{ if(confirm('Добавить 1 оскар всем фильмам с рейтингом R?')){ await api.op_addOscarToR(); toast.value = 'Операция выполнена'; tableRef.value.load() } },
+      uniqueGenres: async ()=>{
+        try {
+          const res = await api.op_uniqueGenres()
+          toast.value = `Genres: ${res.join(', ')}`
+        } catch (e) { onError(e) }
+      },
+      countGolden: async ()=>{
+        const v = prompt('Введите значение goldenPalmCount')
+        if(v==null) return
+        try {
+          const res = await api.op_countGoldenPalm(parseInt(v))
+          toast.value = `Count = ${res}`
+        } catch (e) { onError(e) }
+      },
+      countUsaGreater: async ()=>{
+        const v = prompt('Введите порог USA boxOffice')
+        if(v==null) return
+        try {
+          const res = await api.op_usaBoxOfficeGreater(parseInt(v))
+          toast.value = `Count = ${res}`
+        } catch (e) { onError(e) }
+      },
+      addOscarR: async ()=>{
+        if(!confirm('Добавить 1 оскар всем фильмам с рейтингом R?')) return
+        try {
+          await api.op_addOscarToR()
+          toast.value = 'Операция выполнена'
+          await tableRef.value?.load?.()
+        } catch (e) { onError(e) }
+      },
     }
 
     const openRemoveOscarsModal = async () => {
@@ -95,15 +122,15 @@ export default {
 
     const confirmRemoveOscars = async () => {
       if (!selectedGenre.value) return
-      await api.op_removeOscarsByDirectorsGenre(selectedGenre.value)
-      toast.value = 'Операция выполнена'
-      removeOscarsOpen.value = false
-      tableRef.value?.load?.()
+      try {
+        await api.op_removeOscarsByDirectorsGenre(selectedGenre.value)
+        toast.value = 'Операция выполнена'
+        removeOscarsOpen.value = false
+        tableRef.value?.load?.()
+      } catch (e) { onError(e) }
     }
 
     const formatters = {}
-
-    onMounted(()=>{})
 
     return { columns, formatters, formVisible, formMode, editingId, detailVisible, detailId, onCreate, onEdit, onView, closeForm, closeDetail, onSaved, onError, toast, tableRef, runOps, removeOscarsOpen, openRemoveOscarsModal, confirmRemoveOscars, genres, selectedGenre }
   }
