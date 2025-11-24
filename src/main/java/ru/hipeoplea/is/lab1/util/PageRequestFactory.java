@@ -23,7 +23,8 @@ public final class PageRequestFactory {
             throw new BadRequestException("page must be >= 1, but got " + page);
         }
         if (pageSize < 1) {
-            throw new BadRequestException("pageSize must be >= 1, but got " + pageSize);
+            throw new BadRequestException(
+                    "pageSize must be >= 1, but got " + pageSize);
         }
         int zeroBasedPage = Math.max(0, page - 1);
         Sort.Direction direction =
