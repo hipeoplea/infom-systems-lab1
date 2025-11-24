@@ -2,15 +2,13 @@ package ru.hipeoplea.is.lab1.controllers;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import ru.hipeoplea.is.lab1.exeption.BadRequestException;
 import ru.hipeoplea.is.lab1.exeption.NotFoundException;
 import ru.hipeoplea.is.lab1.models.Movie;
 import ru.hipeoplea.is.lab1.services.MovieService;
 import ru.hipeoplea.is.lab1.websocket.WsHub;
+import ru.hipeoplea.is.lab1.util.PageRequestFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,19 +59,8 @@ public class MovieController {
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortDir
     ) {
-        if (page < 1) {
-            throw new BadRequestException("page must be >= 1");
-        }
-        if (pageSize < 1) {
-            throw new BadRequestException("pageSize must be >= 1");
-        }
-        int p = Math.max(0, page - 1);
-        Sort.Direction direction =
-                "desc".equalsIgnoreCase(sortDir)
-                        ? Sort.Direction.DESC
-                        : Sort.Direction.ASC;
-        Sort sort = Sort.by(direction, sanitizeSort(sortBy));
-        Pageable pageable = PageRequest.of(p, Math.max(1, pageSize), sort);
+        Pageable pageable = PageRequestFactory.build(
+                page, pageSize, sortBy, sortDir, this::sanitizeSort);
 
         Page<Movie> res = (filter != null && !filter.isBlank())
                 ? movieService.search(filter.trim(), pageable)

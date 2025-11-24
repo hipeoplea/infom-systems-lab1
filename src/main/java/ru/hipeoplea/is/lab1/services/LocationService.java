@@ -59,8 +59,7 @@ public class LocationService {
         existing.setY(updated.getY());
         existing.setName(updated.getName());
 
-        Location saved = locationRepository.save(existing);
-        return saved;
+        return locationRepository.save(existing);
     }
 
     /**

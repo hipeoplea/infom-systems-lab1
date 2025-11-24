@@ -24,8 +24,7 @@ public class CoordinatesService {
      * Persists new coordinates.
      */
     public Coordinates create(Coordinates coordinates) {
-        Coordinates saved = coordinatesRepository.save(coordinates);
-        return saved;
+        return coordinatesRepository.save(coordinates);
     }
 
     /**
