@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   pg:
-    image: postgres:15
+    image: postgres:16.4
     environment:
       POSTGRES_DB: ${DB_USER}
       POSTGRES_USER: ${DB_PASS}
@@ -10,6 +10,5 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-
 volumes:
   pgdata:
