@@ -1,77 +1,53 @@
 package ru.hipeoplea.is.lab1.controllers;
 
 import lombok.RequiredArgsConstructor;
-import ru.hipeoplea.is.lab1.exeption.NotFoundException;
-import ru.hipeoplea.is.lab1.models.Location;
-import ru.hipeoplea.is.lab1.services.LocationService;
-import ru.hipeoplea.is.lab1.websocket.WsHub;
-import ru.hipeoplea.is.lab1.util.PageRequestFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import ru.hipeoplea.is.lab1.exeption.NotFoundException;
+import ru.hipeoplea.is.lab1.generated.api.LocationsApi;
+import ru.hipeoplea.is.lab1.generated.model.PageLocationResponse;
+import ru.hipeoplea.is.lab1.models.Location;
+import ru.hipeoplea.is.lab1.services.LocationService;
+import ru.hipeoplea.is.lab1.util.PageRequestFactory;
+import ru.hipeoplea.is.lab1.websocket.WsHub;
 
 @RestController
-@RequestMapping("/api/locations")
 @RequiredArgsConstructor
-public class LocationController {
+public class LocationController implements LocationsApi {
     private final LocationService locationService;
     private final WsHub wsHub;
 
-    /**
-     * Creates a location.
-     */
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Location create(@RequestBody Location location) {
+    @Override
+    public ResponseEntity<Location> createLocation(Location location) {
         Location saved = locationService.create(location);
         broadcastAfterCommit("created", saved.getId());
-        return saved;
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    /**
-     * Retrieves a location or throws when missing.
-     */
-    @GetMapping("/{id}")
-    public Location getById(@PathVariable Long id) {
-        return locationService
+    @Override
+    public ResponseEntity<Location> getLocation(Long id) {
+        Location location = locationService
                 .getById(id)
                 .orElseThrow(() -> new NotFoundException("Location not found"));
+        return ResponseEntity.ok(location);
     }
 
-    /**
-     * Lists locations with pagination.
-     */
-    @GetMapping
-    public Object getAll(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int pageSize,
-            @RequestParam(required = false, defaultValue = "") String filter,
-            @RequestParam(required = false, defaultValue = "id") String sortBy,
-            @RequestParam(required = false, defaultValue = "asc") String sortDir
-    ) {
+    @Override
+    public ResponseEntity<PageLocationResponse> listLocations(
+            Integer page, Integer pageSize, String filter, String sortBy,
+            String sortDir) {
         Pageable pageable = PageRequestFactory.build(
                 page, pageSize, sortBy, sortDir, this::sanitizeSort);
 
         Page<Location> res = locationService.getAll(pageable);
-        return java.util.Map.of(
-                "items", res.getContent(),
-                "total", res.getTotalElements()
-        );
+        PageLocationResponse body = new PageLocationResponse(
+                res.getContent(), res.getTotalElements());
+        return ResponseEntity.ok(body);
     }
 
-    /**
-     * Ensures only safe sort fields are used.
-     */
     private String sanitizeSort(String sortBy) {
         return switch (sortBy) {
             case "id", "x", "y", "name" -> sortBy;
@@ -79,25 +55,18 @@ public class LocationController {
         };
     }
 
-    /**
-     * Updates a location.
-     */
-    @PutMapping("/{id}")
-    public Location update(
-            @PathVariable Long id, @RequestBody Location location) {
+    @Override
+    public ResponseEntity<Location> updateLocation(Long id, Location location) {
         Location saved = locationService.update(id, location);
         broadcastAfterCommit("updated", saved.getId());
-        return saved;
+        return ResponseEntity.ok(saved);
     }
 
-    /**
-     * Deletes a location by id.
-     */
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    @Override
+    public ResponseEntity<Void> deleteLocation(Long id) {
         locationService.delete(id);
         broadcastAfterCommit("deleted", id);
+        return ResponseEntity.noContent().build();
     }
 
     private void broadcastAfterCommit(String type, Long id) {
