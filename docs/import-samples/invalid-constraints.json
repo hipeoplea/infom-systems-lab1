@@ -1,0 +1,83 @@
+[
+  {
+    "name": "Broken Movie",
+    "coordinates": { "x": -600.0, "y": 1.0 },
+    "creationDate": "2024-03-01T12:00:00Z",
+    "oscarsCount": 0,
+    "budget": -1.0,
+    "totalBoxOffice": 0,
+    "mpaaRating": null,
+    "director": {
+      "name": "",
+      "eyeColor": "BLUE",
+      "passportID": "SHORT",
+      "location": { "x": 1.0, "y": 1, "name": "" }
+    },
+    "operator": null,
+    "length": -10,
+    "goldenPalmCount": 0,
+    "usaBoxOffice": -5,
+    "genre": "HORROR"
+  },
+  {
+    "name": "Missing Requireds",
+    "coordinates": { "x": 1.0 },
+    "creationDate": "2024-03-02T12:00:00Z",
+    "oscarsCount": 1,
+    "budget": 1000.0,
+    "totalBoxOffice": 2000,
+    "mpaaRating": "R",
+    "director": {
+      "name": "No Location Name",
+      "eyeColor": "RED",
+      "location": { "x": 1.0, "y": 2 }
+    },
+    "operator": {
+      "name": "Op One",
+      "eyeColor": "BLACK",
+      "location": { "x": 2.0, "y": 2, "name": "OpCity" }
+    },
+    "length": 100,
+    "goldenPalmCount": 1,
+    "usaBoxOffice": 1000,
+    "genre": "ADVENTURE"
+  },{
+
+  "name": "iiiii",
+  "coordinates": { "x": 10.5, "y": 200.0 },
+  "creationDate": "2024-01-01T10:00:00Z",
+  "oscarsCount": 1,
+  "budget": 1500000.5,
+  "totalBoxOffice": 3200000,
+  "mpaaRating": "R",
+  "director": {
+  "name": "Alice Director",
+  "eyeColor": "BLUE",
+  "hairColor": "BLACK",
+  "nationality": "GERMANY",
+  "passportID": "A123456789",
+  "location": { "x": 1.5, "y": 2, "name": "Berlin" }
+},
+  "screenwriter": {
+  "name": "Bob Writer",
+  "eyeColor": "RED",
+  "hairColor": "ORANGE",
+  "nationality": "USA",
+  "passportID": "WRITER12345",
+  "location": { "x": 0.5, "y": 3, "name": "LA" }
+},
+  "operator": {
+  "name": "Charlie Operator",
+  "eyeColor": "BLACK",
+  "hairColor": "BLACK",
+  "nationality": "SPAIN",
+  "passportID": "OP123456789",
+  "location": { "x": 5.5, "y": 4, "name": "Madrid" }
+},
+  "length": 120,
+  "goldenPalmCount": 2,
+  "usaBoxOffice": 2000000,
+  "genre": "ADVENTURE"
+  }
+
+]

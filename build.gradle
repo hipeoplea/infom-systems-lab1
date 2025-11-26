@@ -87,7 +87,10 @@ openApiGenerate {
             MovieGenre  : "ru.hipeoplea.is.lab1.models.MovieGenre",
             MpaaRating  : "ru.hipeoplea.is.lab1.models.MpaaRating",
             Color       : "ru.hipeoplea.is.lab1.models.Color",
-            Country     : "ru.hipeoplea.is.lab1.models.Country"
+            Country     : "ru.hipeoplea.is.lab1.models.Country",
+            ImportResult: "ru.hipeoplea.is.lab1.web.ImportResult",
+            ImportOperation: "ru.hipeoplea.is.lab1.models.ImportOperation",
+            ImportStatus: "ru.hipeoplea.is.lab1.models.ImportStatus"
     ]
     importMappings = typeMappings as Provider<? extends Map<? extends String, ? extends String>>
     globalProperties = [

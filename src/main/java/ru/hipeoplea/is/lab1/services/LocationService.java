@@ -10,20 +10,25 @@ import ru.hipeoplea.is.lab1.exeption.NotFoundException;
 import ru.hipeoplea.is.lab1.models.Location;
 import ru.hipeoplea.is.lab1.repository.LocationRepository;
 import ru.hipeoplea.is.lab1.web.GlobalExceptionHandler;
+import ru.hipeoplea.is.lab1.validation.LocationValidator;
 
 @Service
 @Transactional
 public class LocationService {
     private final LocationRepository locationRepository;
+    private final LocationValidator locationValidator;
 
-    public LocationService(LocationRepository locationRepository) {
+    public LocationService(LocationRepository locationRepository,
+            LocationValidator locationValidator) {
         this.locationRepository = locationRepository;
+        this.locationValidator = locationValidator;
     }
 
     /**
      * Creates a location.
      */
     public Location create(Location location) {
+        locationValidator.validate(location, null);
         return locationRepository.save(location);
     }
 
@@ -54,6 +59,8 @@ public class LocationService {
                                 () ->
                                         new NotFoundException(
                                                 "Location not found"));
+
+        locationValidator.validate(updated, id);
 
         existing.setX(updated.getX());
         existing.setY(updated.getY());

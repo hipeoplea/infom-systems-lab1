@@ -10,20 +10,26 @@ import ru.hipeoplea.is.lab1.exeption.NotFoundException;
 import ru.hipeoplea.is.lab1.models.Person;
 import ru.hipeoplea.is.lab1.repository.PersonRepository;
 import ru.hipeoplea.is.lab1.web.GlobalExceptionHandler;
+import ru.hipeoplea.is.lab1.validation.PersonValidator;
 
 @Service
 @Transactional
 public class PersonService {
     private final PersonRepository personRepository;
+    private final PersonValidator personValidator;
 
-    public PersonService(PersonRepository personRepository) {
+    public PersonService(PersonRepository personRepository,
+            PersonValidator personValidator) {
         this.personRepository = personRepository;
+        this.personValidator = personValidator;
     }
 
     /**
      * Persists a new person.
      */
     public Person create(Person person) {
+        personValidator.ensureUnique(person.getName(), person.getEyeColor(),
+                person.getNationality(), null);
         return personRepository.save(person);
     }
 
@@ -55,6 +61,9 @@ public class PersonService {
                                         new NotFoundException(
                                                 "Person not found"));
 
+        personValidator.ensureUnique(updated.getName(),
+                updated.getEyeColor(), updated.getNationality(), id);
+
         existing.setName(updated.getName());
         existing.setEyeColor(updated.getEyeColor());
         existing.setHairColor(updated.getHairColor());
@@ -82,4 +91,5 @@ public class PersonService {
             throw ex;
         }
     }
+
 }

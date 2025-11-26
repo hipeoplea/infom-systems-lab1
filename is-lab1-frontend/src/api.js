@@ -59,3 +59,20 @@ export const op_addOscarToR = () =>
   api.post(`/ops/addOscarToR`).then((r) => r.data);
 export const op_removeOscarsByDirectorsGenre = (genre) =>
   api.post(`/ops/removeOscarsByDirectorsGenre`, { genre }).then((r) => r.data);
+
+export const importMovies = (file, user) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return api
+    .post("/movies/import", formData, {
+      params: { user },
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+    .then((r) => r.data);
+};
+
+export const importHistory = (user) =>
+  api.get("/imports", { params: { user } }).then((r) => r.data);
+
+export const importHistoryAdmin = () =>
+  api.get("/admin/imports").then((r) => r.data);
