@@ -1,0 +1,662 @@
+openapi: 3.0.3
+info:
+  title: IS Lab1 API
+  version: 0.0.1
+  description: REST API for movies, people, locations and operations.
+servers:
+  - url: /
+components:
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize10Param:
+      name: pageSize
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 10
+    PageSize5Param:
+      name: pageSize
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 5
+    FilterParam:
+      name: filter
+      in: query
+      schema:
+        type: string
+        default: ""
+    SortByParam:
+      name: sortBy
+      in: query
+      schema:
+        type: string
+        default: id
+    SortDirParam:
+      name: sortDir
+      in: query
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: asc
+    IdPathParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  schemas:
+    Coordinates:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        x:
+          type: number
+          format: float
+        y:
+          type: number
+          format: double
+      required: [x, y]
+    Location:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        x:
+          type: number
+          format: float
+        y:
+          type: integer
+          format: int32
+        name:
+          type: string
+      required: [x, name]
+    Person:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        eyeColor:
+          $ref: '#/components/schemas/Color'
+        hairColor:
+          $ref: '#/components/schemas/Color'
+        location:
+          $ref: '#/components/schemas/Location'
+        passportID:
+          type: string
+          minLength: 10
+          maxLength: 26
+        nationality:
+          $ref: '#/components/schemas/Country'
+      required: [name, eyeColor]
+    Movie:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        creationDate:
+          type: string
+          format: date-time
+        oscarsCount:
+          type: integer
+          format: int64
+          minimum: 1
+        budget:
+          type: number
+          format: float
+          minimum: 0
+        totalBoxOffice:
+          type: integer
+          format: int64
+          minimum: 0
+        mpaaRating:
+          $ref: '#/components/schemas/MpaaRating'
+        director:
+          $ref: '#/components/schemas/Person'
+        screenwriter:
+          $ref: '#/components/schemas/Person'
+        operator:
+          $ref: '#/components/schemas/Person'
+        length:
+          type: integer
+          format: int32
+          minimum: 1
+        goldenPalmCount:
+          type: integer
+          format: int64
+          minimum: 1
+        usaBoxOffice:
+          type: integer
+          format: int64
+          minimum: 0
+        genre:
+          $ref: '#/components/schemas/MovieGenre'
+      required:
+        - name
+        - coordinates
+        - mpaaRating
+        - director
+        - operator
+        - goldenPalmCount
+        - genre
+    PageMovieResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Movie'
+        total:
+          type: integer
+          format: int64
+      required: [items, total]
+    PagePersonResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Person'
+        total:
+          type: integer
+          format: int64
+      required: [items, total]
+    PageCoordinatesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Coordinates'
+        total:
+          type: integer
+          format: int64
+      required: [items, total]
+    PageLocationResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+        total:
+          type: integer
+          format: int64
+      required: [items, total]
+    MovieGenre:
+      type: string
+      enum: [WESTERN, ADVENTURE, TRAGEDY, HORROR, SCIENCE_FICTION]
+    MpaaRating:
+      type: string
+      enum: [G, PG, PG_13, R]
+    Color:
+      type: string
+      enum: [RED, BLACK, BLUE, ORANGE]
+    Country:
+      type: string
+      enum: [USA, GERMANY, SPAIN, CHINA, VATICAN]
+    ParamGenre:
+      type: object
+      properties:
+        genre:
+          $ref: '#/components/schemas/MovieGenre'
+      required: [genre]
+paths:
+  /api/movies:
+    get:
+      tags: [Movies]
+      summary: List movies
+      operationId: listMovies
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSize10Param'
+        - $ref: '#/components/parameters/FilterParam'
+        - $ref: '#/components/parameters/SortByParam'
+        - $ref: '#/components/parameters/SortDirParam'
+      responses:
+        '200':
+          description: Page of movies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageMovieResponse'
+    post:
+      tags: [Movies]
+      summary: Create movie
+      operationId: createMovie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movie'
+      responses:
+        '201':
+          description: Created movie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+  /api/movies/{id}:
+    get:
+      tags: [Movies]
+      summary: Get movie by id
+      operationId: getMovie
+      parameters:
+        - $ref: '#/components/parameters/IdPathParam'
+      responses:
+        '200':
+          description: Movie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+    put:
+      tags: [Movies]
+      summary: Update movie
+      operationId: updateMovie
+      parameters:
+        - $ref: '#/components/parameters/IdPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movie'
+      responses:
+        '200':
+          description: Updated movie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+    delete:
+      tags: [Movies]
+      summary: Delete movie
+      operationId: deleteMovie
+      parameters:
+        - $ref: '#/components/parameters/IdPathParam'
+      responses:
+        '204':
+          description: Deleted
+  /api/movies/count/golden-palms/{count}:
+    get:
+      tags: [Movies]
+      summary: Count movies by golden palms
+      operationId: countMoviesByGoldenPalms
+      parameters:
+        - name: count
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Count result
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+  /api/movies/count/usa-box-office/{value}:
+    get:
+      tags: [Movies]
+      summary: Count movies with USA box office greater than value
+      operationId: countMoviesByUsaBoxOffice
+      parameters:
+        - name: value
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Count result
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+  /api/movies/genres:
+    get:
+      tags: [Movies]
+      summary: Movies with genre set
+      operationId: listMoviesWithGenre
+      responses:
+        '200':
+          description: Movies having non-null genre
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+  /api/coordinates:
+    get:
+      tags: [Coordinates]
+      summary: List coordinates
+      operationId: listCoordinates
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSize10Param'
+        - $ref: '#/components/parameters/FilterParam'
+        - $ref: '#/components/parameters/SortByParam'
+        - $ref: '#/components/parameters/SortDirParam'
+      responses:
+        '200':
+          description: Page of coordinates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageCoordinatesResponse'
+    post:
+      tags: [Coordinates]
+      summary: Create coordinates
+      operationId: createCoordinates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Coordinates'
+      responses:
+        '201':
+          description: Created coordinates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Coordinates'
+  /api/coordinates/{id}:
+    get:
+      tags: [Coordinates]
+      summary: Get coordinates by id
+      operationId: getCoordinates
+      parameters:
+        - $ref: '#/components/parameters/IdPathParam'
+      responses:
+        '200':
+          description: Coordinates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Coordinates'
+    put:
+      tags: [Coordinates]
+      summary: Update coordinates
+      operationId: updateCoordinates
+      parameters:
+        - $ref: '#/components/parameters/IdPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Coordinates'
+      responses:
+        '200':
+          description: Updated coordinates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Coordinates'
+    delete:
+      tags: [Coordinates]
+      summary: Delete coordinates
+      operationId: deleteCoordinates
+      parameters:
+        - $ref: '#/components/parameters/IdPathParam'
+      responses:
+        '204':
+          description: Deleted
+  /api/locations:
+    get:
+      tags: [Locations]
+      summary: List locations
+      operationId: listLocations
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSize10Param'
+        - $ref: '#/components/parameters/FilterParam'
+        - $ref: '#/components/parameters/SortByParam'
+        - $ref: '#/components/parameters/SortDirParam'
+      responses:
+        '200':
+          description: Page of locations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageLocationResponse'
+    post:
+      tags: [Locations]
+      summary: Create location
+      operationId: createLocation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      responses:
+        '201':
+          description: Created location
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+  /api/locations/{id}:
+    get:
+      tags: [Locations]
+      summary: Get location by id
+      operationId: getLocation
+      parameters:
+        - $ref: '#/components/parameters/IdPathParam'
+      responses:
+        '200':
+          description: Location
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+    put:
+      tags: [Locations]
+      summary: Update location
+      operationId: updateLocation
+      parameters:
+        - $ref: '#/components/parameters/IdPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      responses:
+        '200':
+          description: Updated location
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+    delete:
+      tags: [Locations]
+      summary: Delete location
+      operationId: deleteLocation
+      parameters:
+        - $ref: '#/components/parameters/IdPathParam'
+      responses:
+        '204':
+          description: Deleted
+  /api/persons:
+    get:
+      tags: [Persons]
+      summary: List persons
+      operationId: listPersons
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSize5Param'
+        - $ref: '#/components/parameters/FilterParam'
+        - $ref: '#/components/parameters/SortByParam'
+        - $ref: '#/components/parameters/SortDirParam'
+      responses:
+        '200':
+          description: Page of persons
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagePersonResponse'
+    post:
+      tags: [Persons]
+      summary: Create person
+      operationId: createPerson
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '201':
+          description: Created person
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+  /api/persons/{id}:
+    get:
+      tags: [Persons]
+      summary: Get person by id
+      operationId: getPerson
+      parameters:
+        - $ref: '#/components/parameters/IdPathParam'
+      responses:
+        '200':
+          description: Person
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+    put:
+      tags: [Persons]
+      summary: Update person
+      operationId: updatePerson
+      parameters:
+        - $ref: '#/components/parameters/IdPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '200':
+          description: Updated person
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+    delete:
+      tags: [Persons]
+      summary: Delete person
+      operationId: deletePerson
+      parameters:
+        - $ref: '#/components/parameters/IdPathParam'
+      responses:
+        '204':
+          description: Deleted
+  /api/ops/goldenPalmCount:
+    get:
+      tags: [Operations]
+      summary: Count movies by golden palm
+      operationId: countGoldenPalm
+      parameters:
+        - name: value
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Count result
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+  /api/ops/usaBoxOfficeGreater:
+    get:
+      tags: [Operations]
+      summary: Count movies where USA box office is greater than value
+      operationId: countUsaBoxOfficeGreater
+      parameters:
+        - name: value
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Count result
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+  /api/ops/uniqueGenres:
+    get:
+      tags: [Operations]
+      summary: List unique genres
+      operationId: listUniqueGenres
+      responses:
+        '200':
+          description: Unique genres
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /api/ops/addOscarToR:
+    post:
+      tags: [Operations]
+      summary: Add oscar to movies with rating R
+      operationId: addOscarToR
+      responses:
+        '200':
+          description: Oscars added
+  /api/ops/removeOscarsByDirectorsGenre:
+    post:
+      tags: [Operations]
+      summary: Remove oscars by directors genre
+      operationId: removeOscarsByDirectorsGenre
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParamGenre'
+      responses:
+        '200':
+          description: Oscars removed

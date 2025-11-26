@@ -1,0 +1,138 @@
+plugins {
+    id 'java'
+    id 'checkstyle'
+    id 'org.springframework.boot' version '3.5.6'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.openapi.generator' version '7.10.0'
+}
+
+group = 'ru.hipeoplea'
+version = '0.0.1-SNAPSHOT'
+description = 'infom-systems-lab1'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+def openApiOutputDir = layout.buildDirectory.dir("generated/openapi")
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa") {
+        exclude group: "org.hibernate", module: "hibernate-core"
+        exclude group: "org.hibernate.orm", module: "hibernate-core"
+    }
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
+    implementation("org.eclipse.persistence:eclipselink:4.0.6")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+    compileOnly("org.projectlombok:lombok")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    runtimeOnly("org.postgresql:postgresql")
+    annotationProcessor("org.projectlombok:lombok")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("com.h2database:h2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+    implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
+    implementation("org.mapstruct:mapstruct:1.5.5.Final")
+    implementation("com.nimbusds:nimbus-jose-jwt:10.3.1")
+    implementation("org.springframework.boot:spring-boot-devtools:3.5.0")
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.mockito:mockito-core:5.19.0")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    implementation("org.openapitools:jackson-databind-nullable:0.2.6")
+
+}
+
+checkstyle {
+    toolVersion = "10.21.1"
+}
+
+tasks.withType(Checkstyle) {
+    configFile = file("config/checkstyle/checkstyle.xml")
+    reports {
+        xml.required.set(true)
+        html.required.set(false)
+    }
+    exclude("**/generated/**")
+    exclude("${openApiOutputDir.get().asFile}/**")
+}
+tasks.withType(Test).configureEach { useJUnitPlatform() }
+
+openApiGenerate {
+    generatorName = "spring"
+    inputSpec = "$rootDir/src/main/resources/openapi.yaml"
+    outputDir = openApiOutputDir.get().asFile.absolutePath
+    apiPackage = "ru.hipeoplea.is.lab1.generated.api"
+    modelPackage = "ru.hipeoplea.is.lab1.generated.model"
+    invokerPackage = "ru.hipeoplea.is.lab1.generated.invoker"
+    typeMappings = [
+            Movie       : "ru.hipeoplea.is.lab1.models.Movie",
+            Person      : "ru.hipeoplea.is.lab1.models.Person",
+            Coordinates : "ru.hipeoplea.is.lab1.models.Coordinates",
+            Location    : "ru.hipeoplea.is.lab1.models.Location",
+            MovieGenre  : "ru.hipeoplea.is.lab1.models.MovieGenre",
+            MpaaRating  : "ru.hipeoplea.is.lab1.models.MpaaRating",
+            Color       : "ru.hipeoplea.is.lab1.models.Color",
+            Country     : "ru.hipeoplea.is.lab1.models.Country"
+    ]
+    importMappings = typeMappings as Provider<? extends Map<? extends String, ? extends String>>
+    globalProperties = [
+            apis          : "",
+            models        : "",
+            supportingFiles: "",
+            apiTests      : "false",
+            modelTests    : "false",
+            apiDocs       : "false",
+            modelDocs     : "false"
+    ]
+    configOptions = [
+            interfaceOnly      : "true",
+            skipDefaultInterface: "true",
+            useTags            : "true",
+            useSpringBoot3     : "true",
+            useJakartaEe       : "true",
+            useBeanValidation  : "true",
+            dateLibrary        : "java8",
+            serializableModel  : "true"
+    ]
+}
+
+sourceSets {
+    main {
+        java.srcDir(openApiOutputDir.get().dir("src/main/java").asFile)
+    }
+}
+
+tasks.named("openApiGenerate") {
+    outputs.upToDateWhen { false }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    dependsOn(tasks.named("openApiGenerate"))
+}
+
+tasks.named("build") {
+    dependsOn(tasks.named("openApiGenerate"))
+}
+
+tasks.register("cleanOpenApi", Delete) {
+    delete(openApiOutputDir.get().asFile)
+}
+
+tasks.named("clean") {
+    dependsOn("cleanOpenApi")
+}
