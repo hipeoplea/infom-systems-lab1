@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Isolation;
 import ru.hipeoplea.is.lab1.exeption.BadRequestException;
 import ru.hipeoplea.is.lab1.exeption.NotFoundException;
 import ru.hipeoplea.is.lab1.models.Coordinates;
@@ -52,6 +53,7 @@ public class CoordinatesService {
     /**
      * Updates coordinates by id.
      */
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Coordinates update(Long id, Coordinates updated) {
         Coordinates existing =
                 coordinatesRepository.findById(id)
