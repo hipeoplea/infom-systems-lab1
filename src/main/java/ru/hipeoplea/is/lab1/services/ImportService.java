@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +61,7 @@ public class ImportService {
 
         ImportOperation finalOp = op;
         try {
-            ImportResult result = txTemplate.execute(status -> {
+            return txTemplate.execute(status -> {
                 List<Movie> movies = parseMovies(file);
                 if (movies.isEmpty()) {
                     throw new BadRequestException(
@@ -80,13 +81,12 @@ public class ImportService {
                 importOperationRepository.save(saved);
                 return new ImportResult(movies.size());
             });
-            return result;
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             ImportOperation saved = importOperationRepository.findById(
                     finalOp.getId()).orElse(finalOp);
             saved.setStatus(ImportStatus.FAILED);
             importOperationRepository.save(saved);
-            throw ex;
+            throw (RuntimeException) ex;
         }
     }
 
@@ -103,9 +103,9 @@ public class ImportService {
 
     private void validateAll(List<Movie> movies) {
         List<String> errors = new ArrayList<>();
-        java.util.Set<String> seenCoords = new java.util.HashSet<>();
-        java.util.Set<String> seenLocations = new java.util.HashSet<>();
-        java.util.Set<String> seenPersons = new java.util.HashSet<>();
+        Set<String> seenCoords = new HashSet<>();
+        Set<String> seenLocations = new HashSet<>();
+        Set<String> seenPersons = new HashSet<>();
 
         for (int i = 0; i < movies.size(); i++) {
             Movie movie = movies.get(i);
@@ -147,8 +147,8 @@ public class ImportService {
             Person person,
             String prefix,
             List<String> errors,
-            java.util.Set<String> seenPersons,
-            java.util.Set<String> seenLocations) {
+            Set<String> seenPersons,
+            Set<String> seenLocations) {
         collectViolations(errors, validator.validate(person), prefix);
         if (person.getLocation() != null) {
             collectViolations(errors, validator.validate(person.getLocation()),
@@ -179,7 +179,7 @@ public class ImportService {
             Location loc,
             String prefix,
             List<String> errors,
-            java.util.Set<String> seenLocations) {
+            Set<String> seenLocations) {
         try {
             locationValidator.validate(loc, null);
         } catch (BadRequestException ex) {
@@ -200,7 +200,7 @@ public class ImportService {
             Coordinates coordinates,
             String prefix,
             List<String> errors,
-            java.util.Set<String> seenCoords) {
+            Set<String> seenCoords) {
         Float x = coordinates.getX();
         Double y = coordinates.getY();
         if (x != null && y != null) {

@@ -7,16 +7,17 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.time.Instant;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @Table(name = "import_operation")
 public class ImportOperation {
     @Id
@@ -31,21 +32,12 @@ public class ImportOperation {
 
     private Integer importedCount;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false,
+            columnDefinition = "timestamp with time zone default now()")
     private Instant createdAt;
-
-    public ImportOperation() {
-    }
 
     public ImportOperation(ImportStatus status, String user) {
         this.status = status;
         this.user = user;
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if (createdAt == null) {
-            createdAt = Instant.now();
-        }
     }
 }

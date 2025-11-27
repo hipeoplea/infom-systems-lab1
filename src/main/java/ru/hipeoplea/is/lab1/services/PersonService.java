@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Isolation;
 import ru.hipeoplea.is.lab1.exeption.BadRequestException;
 import ru.hipeoplea.is.lab1.exeption.NotFoundException;
 import ru.hipeoplea.is.lab1.models.Person;
@@ -53,7 +52,7 @@ public class PersonService {
     /**
      * Updates a person.
      */
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Transactional
     public Person update(Long id, Person updated) {
         Person existing =
                 personRepository

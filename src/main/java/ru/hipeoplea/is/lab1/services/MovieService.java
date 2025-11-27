@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Isolation;
 import ru.hipeoplea.is.lab1.exeption.NotFoundException;
 import ru.hipeoplea.is.lab1.models.Movie;
 import ru.hipeoplea.is.lab1.repository.MovieRepository;
@@ -54,7 +53,7 @@ public class MovieService {
     /**
      * Updates an existing movie.
      */
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Transactional
     public Movie update(Long id, Movie updated) {
         Movie existing = movieRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Movie not found"));
