@@ -7,19 +7,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import ru.hipeoplea.is.lab1.exeption.NotFoundException;
 import ru.hipeoplea.is.lab1.generated.api.MoviesApi;
 import ru.hipeoplea.is.lab1.generated.model.PageMovieResponse;
 import ru.hipeoplea.is.lab1.models.Movie;
+import ru.hipeoplea.is.lab1.services.ImportService;
 import ru.hipeoplea.is.lab1.services.MovieService;
 import ru.hipeoplea.is.lab1.util.PageRequestFactory;
 import ru.hipeoplea.is.lab1.websocket.WsHub;
+import ru.hipeoplea.is.lab1.web.ImportResult;
 
 @RestController
 @RequiredArgsConstructor
 public class MovieController implements MoviesApi {
     private final MovieService movieService;
     private final WsHub wsHub;
+    private final ImportService importService;
 
     @Override
     public ResponseEntity<Movie> createMovie(Movie movie) {
@@ -89,6 +93,13 @@ public class MovieController implements MoviesApi {
     @Override
     public ResponseEntity<List<Movie>> listMoviesWithGenre() {
         return ResponseEntity.ok(movieService.findDistinctByGenreIsNotNull());
+    }
+
+    @Override
+    public ResponseEntity<ImportResult> importMovies(
+            String user, MultipartFile file) {
+        ImportResult result = importService.importMovies(file, user);
+        return ResponseEntity.ok(result);
     }
 
     private void broadcastAfterCommit(String type, Long id) {

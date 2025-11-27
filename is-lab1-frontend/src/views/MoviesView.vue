@@ -5,6 +5,24 @@
         <div style="font-weight: 600; letter-spacing: 0.2px; color: #cbd5e1">
           Работа с фильмами
         </div>
+        <div class="ml-auto" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+          <input
+            v-model="currentUser"
+            class="input"
+            placeholder="Имя пользователя"
+            style="max-width: 180px"
+          />
+          <label style="display: flex; gap: 6px; align-items: center; color: #cbd5e1">
+            <input type="checkbox" v-model="adminMode" />
+            Админ
+          </label>
+          <button class="btn" @click="openHistory">
+            История импорта
+          </button>
+          <button class="btn btn-secondary" @click="triggerImport">
+            Импорт JSON
+          </button>
+        </div>
         <div class="ml-auto" style="display: flex; gap: 8px; flex-wrap: wrap">
           <button class="btn btn-secondary" @click="runOps.uniqueGenres">
             Уникальные жанры
@@ -33,6 +51,13 @@
       @edit="onEdit"
       @create="onCreate"
       @error="onError"
+    />
+    <input
+      ref="fileInput"
+      type="file"
+      accept="application/json"
+      style="display: none"
+      @change="onFileSelected"
     />
 
     <ObjectForm
@@ -73,6 +98,47 @@
         </div>
       </div>
     </div>
+
+    <div v-if="historyOpen" class="modal">
+      <div class="card history-card">
+        <div class="history-header">
+          <div>
+            <div class="history-title">История импорта</div>
+            <div class="history-subtitle">
+              {{ adminMode ? "Администратор: все операции" : `Пользователь: ${currentUser || "—"}` }}
+            </div>
+          </div>
+          <button class="btn btn-secondary" @click="historyOpen = false">Закрыть</button>
+        </div>
+
+        <div class="history-grid head">
+          <div>ID</div>
+          <div>Статус</div>
+          <div>Пользователь</div>
+          <div>Импортировано</div>
+          <div>Время</div>
+        </div>
+        <div
+          v-for="op in history"
+          :key="op.id"
+          class="history-grid row"
+          :class="{
+            success: op.status === 'SUCCESS',
+            failed: op.status === 'FAILED',
+            pending: op.status === 'IN_PROGRESS',
+          }"
+        >
+          <div class="mono">#{{ op.id }}</div>
+          <div class="badge" :class="op.status.toLowerCase()">{{ op.status }}</div>
+          <div>{{ op.user }}</div>
+          <div>{{ op.importedCount ?? "—" }}</div>
+          <div class="mono">{{ formatDate(op.createdAt) }}</div>
+        </div>
+        <div v-if="!history.length" class="history-empty">
+          Нет записей
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -104,9 +170,14 @@ export default {
     const detailId = ref(null);
     const toast = ref("");
     const tableRef = ref(null);
+    const currentUser = ref("");
+    const adminMode = ref(false);
+    const fileInput = ref(null);
     const removeOscarsOpen = ref(false);
     const genres = ref([]);
     const selectedGenre = ref("");
+    const historyOpen = ref(false);
+    const history = ref([]);
 
     const ws = createWS((msg) => {
       if (tableRef.value && tableRef.value.load) tableRef.value.load();
@@ -140,6 +211,52 @@ export default {
     const onError = (err) => {
       toast.value = typeof err === "string" ? err : err?.message || String(err);
       setTimeout(() => (toast.value = ""), 4000);
+    };
+
+    const triggerImport = () => {
+      if (!currentUser.value.trim()) {
+        toast.value = "Укажите имя пользователя для импорта";
+        setTimeout(() => (toast.value = ""), 2500);
+        return;
+      }
+      fileInput.value?.click?.();
+    };
+    const onFileSelected = async (e) => {
+      const file = e.target.files?.[0];
+      e.target.value = "";
+      if (!file) return;
+      try {
+        const res = await api.importMovies(file, currentUser.value.trim());
+        toast.value = `Импортировано: ${res.imported}`;
+        await tableRef.value?.load?.();
+      } catch (err) {
+        onError(err.response?.data?.message || err.message);
+      }
+    };
+
+    const openHistory = async () => {
+      try {
+        if (adminMode.value) {
+          history.value = await api.importHistoryAdmin();
+        } else {
+          if (!currentUser.value.trim()) {
+            toast.value = "Укажите имя пользователя для истории";
+            setTimeout(() => (toast.value = ""), 2500);
+            return;
+          }
+          history.value = await api.importHistory(currentUser.value.trim());
+        }
+        historyOpen.value = true;
+      } catch (err) {
+        onError(err.response?.data?.message || err.message);
+      }
+    };
+
+    const formatDate = (val) => {
+      if (!val) return "";
+      const d = new Date(val);
+      if (Number.isNaN(d.getTime())) return val;
+      return d.toLocaleString();
     };
 
     const runOps = {
@@ -231,6 +348,15 @@ export default {
       confirmRemoveOscars,
       genres,
       selectedGenre,
+      fileInput,
+      triggerImport,
+      onFileSelected,
+      currentUser,
+      adminMode,
+      historyOpen,
+      history,
+      openHistory,
+      formatDate,
     };
   },
 };

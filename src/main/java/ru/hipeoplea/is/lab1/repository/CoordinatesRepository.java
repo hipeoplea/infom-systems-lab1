@@ -7,4 +7,7 @@ import ru.hipeoplea.is.lab1.models.Coordinates;
 @Repository
 public interface CoordinatesRepository
         extends JpaRepository<Coordinates, Long> {
+    boolean existsByXAndY(Float x, Double y);
+
+    boolean existsByXAndYAndIdNot(Float x, Double y, Long id);
 }

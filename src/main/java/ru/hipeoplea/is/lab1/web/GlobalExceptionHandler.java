@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.TransactionSystemException;
@@ -82,6 +83,19 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST,
                 req.getRequestURI(),
                 "Ошибки валидации данных");
+    }
+
+    /**
+     * Maps optimistic locking to conflict (409).
+     */
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object> handleOptimistic(
+            OptimisticLockingFailureException ex, HttpServletRequest req) {
+        return error(
+                HttpStatus.CONFLICT,
+                req.getRequestURI(),
+                "Объект был изменен другим пользователем, повторите действие");
     }
 
     public static boolean isForeignKeyViolation(Throwable t) {

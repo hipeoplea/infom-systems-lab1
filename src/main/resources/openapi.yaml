@@ -221,6 +221,35 @@ components:
         genre:
           $ref: '#/components/schemas/MovieGenre'
       required: [genre]
+    ImportResult:
+      type: object
+      properties:
+        imported:
+          type: integer
+          format: int32
+          description: Количество успешно импортированных записей
+      required: [imported]
+    ImportStatus:
+      type: string
+      enum: [IN_PROGRESS, SUCCESS, FAILED]
+    ImportOperation:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        status:
+          $ref: '#/components/schemas/ImportStatus'
+        user:
+          type: string
+        importedCount:
+          type: integer
+          format: int32
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, status, user]
 paths:
   /api/movies:
     get:
@@ -353,6 +382,68 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Movie'
+  /api/movies/import:
+    post:
+      tags: [Movies]
+      summary: Import movies from JSON file
+      operationId: importMovies
+      parameters:
+        - name: user
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Import result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportResult'
+  /api/imports:
+    get:
+      tags: [Imports]
+      summary: List import operations for current user
+      operationId: listImportsForUser
+      parameters:
+        - name: user
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Import operations for user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImportOperation'
+  /api/admin/imports:
+    get:
+      tags: [Imports]
+      summary: List all import operations
+      operationId: listAllImports
+      responses:
+        '200':
+          description: All import operations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImportOperation'
   /api/coordinates:
     get:
       tags: [Coordinates]

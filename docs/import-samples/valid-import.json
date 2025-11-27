@@ -1,0 +1,66 @@
+[
+  {
+    "name": "Voyage",
+    "coordinates": { "x": 10.5, "y": 200.0 },
+    "creationDate": "2024-01-01T10:00:00Z",
+    "oscarsCount": 1,
+    "budget": 1500000.5,
+    "totalBoxOffice": 3200000,
+    "mpaaRating": "R",
+    "director": {
+      "name": "Alice Director",
+      "eyeColor": "BLUE",
+      "hairColor": "BLACK",
+      "nationality": "GERMANY",
+      "passportID": "A123456789",
+      "location": { "x": 1.5, "y": 2, "name": "Berlin" }
+    },
+    "screenwriter": {
+      "name": "Bob Writer",
+      "eyeColor": "RED",
+      "hairColor": "ORANGE",
+      "nationality": "USA",
+      "passportID": "WRITER12345",
+      "location": { "x": 0.5, "y": 3, "name": "LA" }
+    },
+    "operator": {
+      "name": "Charlie Operator",
+      "eyeColor": "BLACK",
+      "hairColor": "BLACK",
+      "nationality": "SPAIN",
+      "passportID": "OP123456789",
+      "location": { "x": 5.5, "y": 4, "name": "Madrid" }
+    },
+    "length": 120,
+    "goldenPalmCount": 2,
+    "usaBoxOffice": 2000000,
+    "genre": "ADVENTURE"
+  },
+  {
+    "name": "Horror Night",
+    "coordinates": { "x": 50.0, "y": 75.0 },
+    "creationDate": "2024-02-10T08:30:00Z",
+    "oscarsCount": 2,
+    "budget": 900000.0,
+    "totalBoxOffice": 2100000,
+    "mpaaRating": "PG_13",
+    "director": {
+      "name": "Dana Scary",
+      "eyeColor": "ORANGE",
+      "nationality": "USA",
+      "passportID": "DANA123456",
+      "location": { "x": 3.0, "y": 1, "name": "Chicago" }
+    },
+    "operator": {
+      "name": "Eve Cam",
+      "eyeColor": "BLUE",
+      "nationality": "USA",
+      "passportID": "EVE1234567",
+      "location": { "x": 2.0, "y": 2, "name": "NY" }
+    },
+    "length": 95,
+    "goldenPalmCount": 1,
+    "usaBoxOffice": 1500000,
+    "genre": "HORROR"
+  }
+]

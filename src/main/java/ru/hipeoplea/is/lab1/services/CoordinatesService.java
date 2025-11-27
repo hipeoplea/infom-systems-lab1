@@ -10,20 +10,26 @@ import ru.hipeoplea.is.lab1.exeption.NotFoundException;
 import ru.hipeoplea.is.lab1.models.Coordinates;
 import ru.hipeoplea.is.lab1.repository.CoordinatesRepository;
 import ru.hipeoplea.is.lab1.web.GlobalExceptionHandler;
+import ru.hipeoplea.is.lab1.validation.CoordinatesValidator;
 
 @Service
 @Transactional
 public class CoordinatesService {
     private final CoordinatesRepository coordinatesRepository;
+    private final CoordinatesValidator coordinatesValidator;
 
-    public CoordinatesService(CoordinatesRepository coordinatesRepository) {
+    public CoordinatesService(CoordinatesRepository coordinatesRepository,
+            CoordinatesValidator coordinatesValidator) {
         this.coordinatesRepository = coordinatesRepository;
+        this.coordinatesValidator = coordinatesValidator;
     }
 
     /**
      * Persists new coordinates.
      */
     public Coordinates create(Coordinates coordinates) {
+        coordinatesValidator.validate(
+                coordinates.getX(), coordinates.getY(), null);
         return coordinatesRepository.save(coordinates);
     }
 
@@ -46,6 +52,7 @@ public class CoordinatesService {
     /**
      * Updates coordinates by id.
      */
+    @Transactional
     public Coordinates update(Long id, Coordinates updated) {
         Coordinates existing =
                 coordinatesRepository.findById(id)
@@ -53,6 +60,8 @@ public class CoordinatesService {
                                 () ->
                                         new NotFoundException(
                                                 "Coordinates not found"));
+
+        coordinatesValidator.validate(updated.getX(), updated.getY(), id);
 
         existing.setX(updated.getX());
         existing.setY(updated.getY());
