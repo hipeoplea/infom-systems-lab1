@@ -14,5 +14,5 @@ public interface ImportOperationRepository
     List<ImportOperation> findAllByOrderByCreatedAtDesc();
 
     List<ImportOperation> findByStatusAndCreatedAtBefore(
-            ImportStatus status, java.time.Instant threshold);
+            ImportStatus status, java.time.OffsetDateTime threshold);
 }

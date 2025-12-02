@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.Instant;
+import java.time.OffsetDateTime;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +34,7 @@ public class ImportOperation {
 
     @Column(nullable = false, updatable = false,
             columnDefinition = "timestamp with time zone default now()")
-    private Instant createdAt;
+    private OffsetDateTime createdAt;
 
     public ImportOperation(ImportStatus status, String user) {
         this.status = status;
