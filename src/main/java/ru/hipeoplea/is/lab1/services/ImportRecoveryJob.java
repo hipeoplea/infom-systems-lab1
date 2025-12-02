@@ -1,9 +1,12 @@
 package ru.hipeoplea.is.lab1.services;
 
+import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.Clock;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,15 +20,16 @@ import ru.hipeoplea.is.lab1.repository.ImportOperationRepository;
 @Component
 @RequiredArgsConstructor
 public class ImportRecoveryJob {
-    private static final int STALE_MINUTES = 10;
-    private static final long DELAY = 300000L;
+    @Value("${jobs.import-recovery.stale-duration}")
+    private Duration staleDuration;
+    private final Clock clock = Clock.systemUTC();
     private final ImportOperationRepository importOperationRepository;
 
-    @Scheduled(fixedDelay = DELAY)
+    @SchedulerLock(name = "importRecoveryJob")
+    @Scheduled(fixedDelayString = "${jobs.import-recovery.delay-ms}")
     @Transactional
     public void recoverStaleImports() {
-        Instant threshold = Instant.now().minus(
-                STALE_MINUTES, ChronoUnit.MINUTES);
+        Instant threshold = clock.instant().minus(staleDuration);
         List<ImportOperation> stale =
                 importOperationRepository.findByStatusAndCreatedAtBefore(
                         ImportStatus.IN_PROGRESS, threshold);
