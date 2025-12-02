@@ -76,6 +76,11 @@ public class ImportService {
                 }
                 ImportOperation saved = importOperationRepository.findById(
                         finalOp.getId()).orElse(finalOp);
+                if (saved.getStatus() != ImportStatus.IN_PROGRESS) {
+                    throw new IllegalStateException(
+                            "Import operation already finalized with status "
+                                    + saved.getStatus());
+                }
                 saved.setImportedCount(movies.size());
                 saved.setStatus(ImportStatus.SUCCESS);
                 importOperationRepository.save(saved);
@@ -84,8 +89,10 @@ public class ImportService {
         } catch (Exception ex) {
             ImportOperation saved = importOperationRepository.findById(
                     finalOp.getId()).orElse(finalOp);
-            saved.setStatus(ImportStatus.FAILED);
-            importOperationRepository.save(saved);
+            if (saved.getStatus() == ImportStatus.IN_PROGRESS) {
+                saved.setStatus(ImportStatus.FAILED);
+                importOperationRepository.save(saved);
+            }
             throw (RuntimeException) ex;
         }
     }
