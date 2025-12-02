@@ -53,6 +53,7 @@ public class MovieService {
     /**
      * Updates an existing movie.
      */
+    @Transactional
     public Movie update(Long id, Movie updated) {
         Movie existing = movieRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Movie not found"));
