@@ -5,9 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.hipeoplea.is.lab1.generated.api.ImportsApi;
 import ru.hipeoplea.is.lab1.models.ImportOperation;
@@ -38,7 +36,7 @@ public class ImportController implements ImportsApi {
                 importOperationRepository.findAllByOrderByCreatedAtDesc());
     }
 
-    @GetMapping("/api/imports/{id}/file")
+    @Override
     public ResponseEntity<Resource> downloadImportFile(
             @PathVariable Long id) {
         ImportOperation op = importOperationRepository.findById(id)
@@ -56,8 +54,8 @@ public class ImportController implements ImportsApi {
                 .body(file);
     }
 
-    @PostMapping("/api/imports/{id}/retry-finalize")
-    public ResponseEntity<Void> retryFinalize(@PathVariable Long id) {
+    @Override
+    public ResponseEntity<Void> retryFinalizeImport(Long id) {
         importService.retryFinalizeFile(id);
         return ResponseEntity.accepted().build();
     }
