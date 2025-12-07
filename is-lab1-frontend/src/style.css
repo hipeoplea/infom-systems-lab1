@@ -190,6 +190,7 @@ select:focus {
 .btn-link {
   --btn-bg: transparent;
   --btn-border: transparent;
+
   color: var(--primary);
   padding: 0;
   border-radius: 0;
@@ -281,8 +282,8 @@ select:focus {
   max-height: 80vh;
   overflow: auto;
   background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgb(255 255 255 / 8%);
+  box-shadow: 0 18px 45px rgb(0 0 0 / 30%);
 }
 
 .history-header {
@@ -325,33 +326,33 @@ select:focus {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-size: 12px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgb(255 255 255 / 3%);
   border-radius: 10px;
 }
 
 .history-grid.row {
   border-radius: 10px;
   margin-top: 6px;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgb(255 255 255 / 2%);
   transition: background 0.2s, transform 0.2s;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border: 1px solid rgb(255 255 255 / 4%);
 }
 
 .history-grid.row:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgb(255 255 255 / 4%);
   transform: translateY(-1px);
 }
 
 .history-grid.row.success {
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid rgb(16 185 129 / 30%);
 }
 
 .history-grid.row.failed {
-  border: 1px solid rgba(248, 113, 113, 0.3);
+  border: 1px solid rgb(248 113 113 / 30%);
 }
 
 .history-grid.row.pending {
-  border: 1px solid rgba(59, 130, 246, 0.25);
+  border: 1px solid rgb(59 130 246 / 25%);
 }
 
 .badge {
@@ -365,17 +366,17 @@ select:focus {
 }
 
 .badge.success {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgb(16 185 129 / 15%);
   color: #22c55e;
 }
 
 .badge.failed {
-  background: rgba(248, 113, 113, 0.15);
+  background: rgb(248 113 113 / 15%);
   color: #f87171;
 }
 
-.badge.in_progress {
-  background: rgba(59, 130, 246, 0.15);
+.badge.in-progress {
+  background: rgb(59 130 246 / 15%);
   color: #60a5fa;
 }
 
@@ -383,7 +384,7 @@ select:focus {
   padding: 14px;
   text-align: center;
   color: #94a3b8;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgb(255 255 255 / 2%);
   border-radius: 10px;
   margin-top: 10px;
 }
