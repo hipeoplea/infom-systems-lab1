@@ -12,16 +12,8 @@
       "eyeColor": "BLUE",
       "hairColor": "BLACK",
       "nationality": "GERMANY",
-      "passportID": "A123456789",
+      "passportID": "A12345678901",
       "location": { "x": 1.5, "y": 2, "name": "Berlin" }
-    },
-    "screenwriter": {
-      "name": "Bob Writer",
-      "eyeColor": "RED",
-      "hairColor": "ORANGE",
-      "nationality": "USA",
-      "passportID": "WRITER12345",
-      "location": { "x": 0.5, "y": 3, "name": "LA" }
     },
     "operator": {
       "name": "Charlie Operator",
@@ -48,19 +40,239 @@
       "name": "Dana Scary",
       "eyeColor": "ORANGE",
       "nationality": "USA",
-      "passportID": "DANA123456",
+      "passportID": "DANA1234567",
       "location": { "x": 3.0, "y": 1, "name": "Chicago" }
     },
     "operator": {
       "name": "Eve Cam",
       "eyeColor": "BLUE",
       "nationality": "USA",
-      "passportID": "EVE1234567",
-      "location": { "x": 2.0, "y": 2, "name": "NY" }
+      "passportID": "EVE12345678",
+      "location": { "x": 2.0, "y": 2, "name": "New York" }
     },
     "length": 95,
     "goldenPalmCount": 1,
     "usaBoxOffice": 1500000,
     "genre": "HORROR"
+  },
+  {
+    "name": "Space Odyssey",
+    "coordinates": { "x": 12.0, "y": 180.0 },
+    "creationDate": "2024-03-15T12:00:00Z",
+    "oscarsCount": 3,
+    "budget": 2000000.0,
+    "totalBoxOffice": 4500000,
+    "mpaaRating": "PG_13",
+    "director": {
+      "name": "Ivan Cosmos",
+      "eyeColor": "BLUE",
+      "hairColor": "BLACK",
+      "nationality": "SPAIN",
+      "passportID": "COSMOS12345",
+      "location": { "x": 7.0, "y": 3, "name": "Barcelona" }
+    },
+    "operator": {
+      "name": "Olga Lens",
+      "eyeColor": "BLUE",
+      "nationality": "GERMANY",
+      "passportID": "OLGA9876543",
+      "location": { "x": 4.0, "y": 1, "name": "Munich" }
+    },
+    "length": 140,
+    "goldenPalmCount": 1,
+    "usaBoxOffice": 3000000,
+    "genre": "SCIENCE_FICTION"
+  },
+  {
+    "name": "Romantic Escape",
+    "coordinates": { "x": 5.0, "y": 150.0 },
+    "creationDate": "2024-04-20T14:15:00Z",
+    "oscarsCount": 1,
+    "budget": 750000.0,
+    "totalBoxOffice": 1800000,
+    "mpaaRating": "PG",
+    "director": {
+      "name": "Mila Love",
+      "eyeColor": "BLUE",
+      "hairColor": "RED",
+      "nationality": "USA",
+      "passportID": "LOVE5555555",
+      "location": { "x": 1.0, "y": 1, "name": "Miami" }
+    },
+    "operator": {
+      "name": "Tom Frame",
+      "eyeColor": "ORANGE",
+      "nationality": "USA",
+      "passportID": "FRAME123456",
+      "location": { "x": 0.8, "y": 0.5, "name": "Austin" }
+    },
+    "length": 110,
+    "goldenPalmCount": 1,
+    "usaBoxOffice": 1200000,
+    "genre": "ADVENTURE"
+  },
+  {
+    "name": "Comedy Club",
+    "coordinates": { "x": 20.0, "y": 210.0 },
+    "creationDate": "2024-05-01T09:00:00Z",
+    "oscarsCount": 1,
+    "budget": 600000.0,
+    "totalBoxOffice": 2000000,
+    "mpaaRating": "PG",
+    "director": {
+      "name": "Lena Laugh",
+      "eyeColor": "BLUE",
+      "hairColor": "ORANGE",
+      "nationality": "USA",
+      "passportID": "LAUGH123456",
+      "location": { "x": 1.2, "y": 1.1, "name": "Denver" }
+    },
+    "operator": {
+      "name": "Rick Zoom",
+      "eyeColor": "BLUE",
+      "nationality": "USA",
+      "passportID": "ZOOM1234567",
+      "location": { "x": 2.5, "y": 2.5, "name": "Seattle" }
+    },
+    "length": 100,
+    "goldenPalmCount": 1,
+    "usaBoxOffice": 1400000,
+    "genre": "TRAGEDY"
+  },
+  {
+    "name": "Mystery Manor",
+    "coordinates": { "x": 18.0, "y": 190.0 },
+    "creationDate": "2024-06-12T16:45:00Z",
+    "oscarsCount": 2,
+    "budget": 1300000.0,
+    "totalBoxOffice": 3500000,
+    "mpaaRating": "R",
+    "director": {
+      "name": "Sam Secret",
+      "eyeColor": "BLACK",
+      "nationality": "GERMANY",
+      "passportID": "SECRET12345",
+      "location": { "x": 3.3, "y": 1.7, "name": "Hamburg" }
+    },
+    "operator": {
+      "name": "Kim Focus",
+      "eyeColor": "BLUE",
+      "nationality": "USA",
+      "passportID": "FOCUS222222",
+      "location": { "x": 2.1, "y": 2.2, "name": "Boston" }
+    },
+    "length": 125,
+    "goldenPalmCount": 1,
+    "usaBoxOffice": 2200000,
+    "genre": "WESTERN"
+  },
+  {
+    "name": "Desert Run",
+    "coordinates": { "x": 30.0, "y": 250.0 },
+    "creationDate": "2024-07-07T07:07:00Z",
+    "oscarsCount": 1,
+    "budget": 800000.0,
+    "totalBoxOffice": 1900000,
+    "mpaaRating": "PG_13",
+    "director": {
+      "name": "Omar Sand",
+      "eyeColor": "BLACK",
+      "nationality": "SPAIN",
+      "passportID": "SAND9876543",
+      "location": { "x": 6.0, "y": 2, "name": "Valencia" }
+    },
+    "operator": {
+      "name": "Ava Light",
+      "eyeColor": "BLUE",
+      "nationality": "USA",
+      "passportID": "LIGHT12345",
+      "location": { "x": 1.5, "y": 1.5, "name": "Phoenix" }
+    },
+    "length": 105,
+    "goldenPalmCount": 1,
+    "usaBoxOffice": 1300000,
+    "genre": "ADVENTURE"
+  },
+  {
+    "name": "City Lights",
+    "coordinates": { "x": 8.5, "y": 170.0 },
+    "creationDate": "2024-08-18T18:00:00Z",
+    "oscarsCount": 1,
+    "budget": 950000.0,
+    "totalBoxOffice": 2600000,
+    "mpaaRating": "PG",
+    "director": {
+      "name": "Noah Street",
+      "eyeColor": "ORANGE",
+      "nationality": "USA",
+      "passportID": "STREET11111",
+      "location": { "x": 0.9, "y": 0.9, "name": "San Jose" }
+    },
+    "operator": {
+      "name": "Ella Shot",
+      "eyeColor": "BLUE",
+      "nationality": "GERMANY",
+      "passportID": "SHOT333333",
+      "location": { "x": 2.8, "y": 1.8, "name": "Stuttgart" }
+    },
+    "length": 115,
+    "goldenPalmCount": 1,
+    "usaBoxOffice": 1700000,
+    "genre": "TRAGEDY"
+  },
+  {
+    "name": "Arctic Tale",
+    "coordinates": { "x": 14.0, "y": 220.0 },
+    "creationDate": "2024-09-25T11:25:00Z",
+    "oscarsCount": 1,
+    "budget": 700000.0,
+    "totalBoxOffice": 1600000,
+    "mpaaRating": "PG",
+    "director": {
+      "name": "Eva Snow",
+      "eyeColor": "BLUE",
+      "hairColor": "BLACK",
+      "nationality": "USA",
+      "passportID": "SNOW444444",
+      "location": { "x": 1.7, "y": 1.2, "name": "Anchorage" }
+    },
+    "operator": {
+      "name": "Lars North",
+      "eyeColor": "ORANGE",
+      "nationality": "GERMANY",
+      "passportID": "NORTH55555",
+      "location": { "x": 3.5, "y": 2.5, "name": "Oslo" }
+    },
+    "length": 125,
+    "goldenPalmCount": 1,
+    "usaBoxOffice": 1100000,
+    "genre": "HORROR"
+  },
+  {
+    "name": "Jungle Call",
+    "coordinates": { "x": 22.0, "y": 230.0 },
+    "creationDate": "2024-10-05T06:30:00Z",
+    "oscarsCount": 1,
+    "budget": 850000.0,
+    "totalBoxOffice": 2400000,
+    "mpaaRating": "PG_13",
+    "director": {
+      "name": "Pia Green",
+      "eyeColor": "BLUE",
+      "nationality": "SPAIN",
+      "passportID": "GREEN12345",
+      "location": { "x": 4.4, "y": 1.6, "name": "Lisbon" }
+    },
+    "operator": {
+      "name": "Rick Cam",
+      "eyeColor": "BLACK",
+      "nationality": "USA",
+      "passportID": "RICCAM12345",
+      "location": { "x": 2.3, "y": 2.7, "name": "Houston" }
+    },
+    "length": 118,
+    "goldenPalmCount": 1,
+    "usaBoxOffice": 1600000,
+    "genre": "ADVENTURE"
   }
 ]

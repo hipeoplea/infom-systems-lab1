@@ -6,6 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import ru.hipeoplea.is.lab1.exeption.NotFoundException;
 import ru.hipeoplea.is.lab1.models.Movie;
 import ru.hipeoplea.is.lab1.repository.MovieRepository;
@@ -14,46 +17,28 @@ import ru.hipeoplea.is.lab1.repository.MovieRepository;
 @Transactional
 public class MovieService {
     private final MovieRepository movieRepository;
-
     public MovieService(MovieRepository movieRepository) {
         this.movieRepository = movieRepository;
     }
-
-    /**
-     * Creates a movie.
-     */
+    @CachePut(cacheNames = "movies", key = "#result.id")
     public Movie create(Movie movie) {
         return movieRepository.save(movie);
     }
-
-    /**
-     * Looks up a movie by id.
-     */
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "movies", key = "#id")
     public Optional<Movie> getById(Long id) {
         return movieRepository.findById(id);
     }
-
-    /**
-     * Returns a page of movies.
-     */
     @Transactional(readOnly = true)
     public Page<Movie> getAll(Pageable pageable) {
         return movieRepository.findAll(pageable);
     }
-
-    /**
-     * Searches movies by a query string.
-     */
     @Transactional(readOnly = true)
     public Page<Movie> search(String q, Pageable pageable) {
         return movieRepository.search(q, pageable);
     }
-
-    /**
-     * Updates an existing movie.
-     */
     @Transactional
+    @CachePut(cacheNames = "movies", key = "#id")
     public Movie update(Long id, Movie updated) {
         Movie existing = movieRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Movie not found"));
@@ -74,10 +59,7 @@ public class MovieService {
 
         return movieRepository.save(existing);
     }
-
-    /**
-     * Deletes a movie by id.
-     */
+    @CacheEvict(cacheNames = "movies", key = "#id")
     public void delete(Long id) {
         Movie movie =
                 movieRepository
@@ -89,24 +71,12 @@ public class MovieService {
                                                         .formatted(id)));
         movieRepository.delete(movie);
     }
-
-    /**
-     * Counts movies by Golden Palm count.
-     */
     public long countByGoldenPalmCount(Long goldenPalmCount) {
         return movieRepository.countByGoldenPalmCount(goldenPalmCount);
     }
-
-    /**
-     * Counts movies whose US box office is greater than given value.
-     */
     public long countByUsaBoxOfficeGreaterThan(long boxOffice) {
         return movieRepository.countByUsaBoxOfficeGreaterThan(boxOffice);
     }
-
-    /**
-     * Returns movies that have genre set.
-     */
     public List<Movie> findDistinctByGenreIsNotNull() {
         return movieRepository.findDistinctByGenreIsNotNull();
     }

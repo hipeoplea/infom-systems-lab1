@@ -84,7 +84,7 @@ export default {
   setup(props, { emit }) {
     const items = ref([]);
     const page = ref(1);
-    const pageSize = ref(10);
+    const pageSize = ref(5);
     const total = ref(0);
     const totalPages = ref(1);
     const filter = ref("");
@@ -100,20 +100,20 @@ export default {
           sortBy: sortBy.value,
           sortDir: sortDir.value,
         });
-        if (Array.isArray(data)) {
-          items.value = data;
-          total.value = data.length;
-          totalPages.value = 1;
-          page.value = 1;
-        } else {
-          const arr = data.items || [];
-          const tot = typeof data.total === "number" ? data.total : arr.length;
-          items.value = arr;
-          total.value = tot;
-          const pages = Math.ceil((tot || 0) / (pageSize.value || 1));
-          totalPages.value = Math.max(1, pages || 1);
-          if (page.value > totalPages.value) page.value = totalPages.value;
-        }
+        const arr = Array.isArray(data)
+          ? data
+          : data.content || data.items || [];
+        const tot =
+          typeof data?.totalElements === "number"
+            ? data.totalElements
+            : typeof data?.total === "number"
+              ? data.total
+              : arr.length;
+        items.value = arr;
+        total.value = tot;
+        const pages = Math.ceil((tot || 0) / (pageSize.value || 1));
+        totalPages.value = Math.max(1, pages || 1);
+        if (page.value > totalPages.value) page.value = totalPages.value;
       } catch (e) {
         emit("error", e.response?.data?.message || e.message);
       }

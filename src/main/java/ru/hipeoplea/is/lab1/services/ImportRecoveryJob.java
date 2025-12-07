@@ -16,9 +16,6 @@ import ru.hipeoplea.is.lab1.models.ImportOperation;
 import ru.hipeoplea.is.lab1.models.ImportStatus;
 import ru.hipeoplea.is.lab1.repository.ImportOperationRepository;
 
-/**
- * Marks stale IN_PROGRESS import operations as FAILED.
- */
 @Component
 @RequiredArgsConstructor
 public class ImportRecoveryJob {
@@ -26,6 +23,7 @@ public class ImportRecoveryJob {
     private Duration staleDuration;
     private final Clock clock = Clock.systemUTC();
     private final ImportOperationRepository importOperationRepository;
+    private final FileStorageService fileStorageService;
 
     @SchedulerLock(name = "importRecoveryJob")
     @Scheduled(fixedDelayString = "${jobs.import-recovery.delay-ms}")
@@ -42,6 +40,20 @@ public class ImportRecoveryJob {
         }
         if (!stale.isEmpty()) {
             importOperationRepository.saveAll(stale);
+        }
+
+        List<ImportOperation> prepared =
+                importOperationRepository.findByStatusAndCreatedAtBefore(
+                        ImportStatus.PREPARED, threshold);
+        for (ImportOperation op : prepared) {
+            op.setStatus(ImportStatus.FAILED);
+            if (op.getTempFileKey() != null) {
+                fileStorageService.deleteQuietly(op.getTempFileKey());
+                op.setTempFileKey(null);
+            }
+        }
+        if (!prepared.isEmpty()) {
+            importOperationRepository.saveAll(prepared);
         }
     }
 }
