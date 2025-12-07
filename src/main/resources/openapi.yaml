@@ -430,6 +430,45 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ImportOperation'
+  /api/imports/{id}/file:
+    get:
+      tags: [Imports]
+      summary: Download import source file
+      operationId: downloadImportFile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Import source file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Not found
+  /api/imports/{id}/retry-finalize:
+    post:
+      tags: [Imports]
+      summary: Retry finalization of import file
+      operationId: retryFinalizeImport
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '202':
+          description: Finalization scheduled
+        '404':
+          description: Not found
   /api/admin/imports:
     get:
       tags: [Imports]

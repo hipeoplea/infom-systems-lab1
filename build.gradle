@@ -37,6 +37,8 @@ dependencies {
     implementation("org.eclipse.persistence:eclipselink:4.0.6")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -49,6 +51,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
     implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
+    implementation("com.alibaba:druid-spring-boot-3-starter:1.2.23")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     implementation("com.nimbusds:nimbus-jose-jwt:10.3.1")
     implementation("org.springframework.boot:spring-boot-devtools:3.5.0")
@@ -56,6 +59,11 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.19.0")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
     implementation("org.openapitools:jackson-databind-nullable:0.2.6")
+    implementation("org.ehcache:ehcache:3.10.8")
+    implementation("javax.cache:cache-api:1.1.1")
+    implementation("io.minio:minio:8.5.11")
+    implementation("javax.xml.bind:jaxb-api:2.3.1")
+    runtimeOnly("org.glassfish.jaxb:jaxb-runtime:2.3.6")
 
 }
 

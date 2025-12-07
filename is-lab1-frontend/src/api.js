@@ -76,3 +76,8 @@ export const importHistory = (user) =>
 
 export const importHistoryAdmin = () =>
   api.get("/admin/imports").then((r) => r.data);
+
+export const downloadImportFile = (id) =>
+  api
+    .get(`/imports/${id}/file`, { responseType: "blob" })
+    .then((r) => ({ data: r.data, headers: r.headers }));

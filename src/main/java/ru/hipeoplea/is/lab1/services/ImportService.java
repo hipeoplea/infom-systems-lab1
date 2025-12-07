@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +30,9 @@ import ru.hipeoplea.is.lab1.models.ImportStatus;
 import ru.hipeoplea.is.lab1.validation.CoordinatesValidator;
 import ru.hipeoplea.is.lab1.validation.LocationValidator;
 import ru.hipeoplea.is.lab1.validation.PersonValidator;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
 
 @Service
 @RequiredArgsConstructor
@@ -44,9 +48,7 @@ public class ImportService {
     private final CoordinatesValidator coordinatesValidator;
     private final LocationValidator locationValidator;
     private final PersonValidator personValidator;
-    /**
-     * Imports movies from JSON file. All-or-nothing transaction.
-     */
+    private final FileStorageService fileStorageService;
     public ImportResult importMovies(MultipartFile file, String user) {
         if (user == null || user.isBlank()) {
             throw new BadRequestException("Имя пользователя обязательно");
@@ -55,14 +57,35 @@ public class ImportService {
             throw new BadRequestException("Файл не передан или пустой");
         }
 
-        ImportOperation op = new ImportOperation(ImportStatus.IN_PROGRESS,
-                user.trim());
+        byte[] payload;
+        try {
+            payload = file.getBytes();
+        } catch (IOException e) {
+            throw new BadRequestException("Не удалось прочитать файл: "
+                    + e.getMessage());
+        }
+
+        ImportOperation op = new ImportOperation(
+                ImportStatus.IN_PROGRESS, user.trim());
+        op.setFileName(file.getOriginalFilename());
+        op.setFileSize((long) payload.length);
         op = importOperationRepository.save(op);
 
         ImportOperation finalOp = op;
+        String tempKey = buildTempKey(op.getId(),
+                file.getOriginalFilename());
+        String finalKey = buildFinalKey(op.getId(),
+                file.getOriginalFilename());
+        String contentType = file.getContentType() == null
+                ? "application/json" : file.getContentType();
+        String storedTemp = null;
         try {
+            storedTemp = fileStorageService.uploadImportFile(tempKey,
+                    payload, contentType);
+            final String tempStoredKey = storedTemp;
+            final String finalStoredKey = finalKey;
             return txTemplate.execute(status -> {
-                List<Movie> movies = parseMovies(file);
+                List<Movie> movies = parseMovies(payload);
                 if (movies.isEmpty()) {
                     throw new BadRequestException(
                             "В файле нет фильмов для импорта");
@@ -82,29 +105,39 @@ public class ImportService {
                                     + saved.getStatus());
                 }
                 saved.setImportedCount(movies.size());
-                saved.setStatus(ImportStatus.SUCCESS);
+                saved.setStatus(ImportStatus.PREPARED);
+                saved.setTempFileKey(tempStoredKey);
                 importOperationRepository.save(saved);
                 return new ImportResult(movies.size());
             });
         } catch (Exception ex) {
+            if (storedTemp != null) {
+                fileStorageService.deleteQuietly(storedTemp);
+            }
             ImportOperation saved = importOperationRepository.findById(
                     finalOp.getId()).orElse(finalOp);
-            if (saved.getStatus() == ImportStatus.IN_PROGRESS) {
+            if (saved.getStatus() == ImportStatus.IN_PROGRESS
+                    || saved.getStatus() == ImportStatus.PREPARED) {
                 saved.setStatus(ImportStatus.FAILED);
                 importOperationRepository.save(saved);
             }
             throw (RuntimeException) ex;
+        } finally {
+            scheduleFinalize(finalOp.getId(), finalKey);
         }
     }
 
-    private List<Movie> parseMovies(MultipartFile file) {
+    private List<Movie> parseMovies(byte[] payload) {
         try {
             return objectMapper.readValue(
-                    file.getInputStream(),
+                    payload,
                     new TypeReference<List<Movie>>() { });
         } catch (IOException e) {
+            String message = e.getMessage() == null
+                    ? "unknown error"
+                    : e.getMessage();
             throw new BadRequestException(
-                    "Не удалось прочитать JSON: " + e.getMessage());
+                    "Не удалось прочитать JSON: " + message);
         }
     }
 
@@ -291,5 +324,60 @@ public class ImportService {
             person.setLocation(locationRepository.save(person.getLocation()));
         }
         return personRepository.save(person);
+    }
+
+    private String buildTempKey(Long importId, String originalName) {
+        String safeName = (originalName == null || originalName.isBlank())
+                ? "upload.json"
+                : originalName.replaceAll("[^a-zA-Z0-9._-]", "_");
+        return "imports/" + importId + "/temp/" + UUID.randomUUID() + "-"
+                + safeName;
+    }
+
+    private String buildFinalKey(Long importId, String originalName) {
+        String safeName = (originalName == null || originalName.isBlank())
+                ? "upload.json"
+                : originalName.replaceAll("[^a-zA-Z0-9._-]", "_");
+        return "imports/" + importId + "/" + safeName;
+    }
+
+    private void scheduleFinalize(Long importId, String finalKey) {
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(
+                    new TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            finalizeFile(importId, finalKey);
+                        }
+                    });
+        } else {
+            finalizeFile(importId, finalKey);
+        }
+    }
+
+    public void retryFinalizeFile(Long importId) {
+        finalizeFile(importId, buildFinalKey(importId, null));
+    }
+
+    private void finalizeFile(Long importId, String finalKey) {
+        txTemplate.executeWithoutResult(status -> {
+            importOperationRepository.findById(importId).ifPresent(op -> {
+                if (op.getStatus() != ImportStatus.PREPARED
+                        || op.getTempFileKey() == null) {
+                    return;
+                }
+                try {
+                    fileStorageService.copyObject(op.getTempFileKey(),
+                            finalKey);
+                    fileStorageService.deleteQuietly(op.getTempFileKey());
+                    op.setFileKey(finalKey);
+                    op.setTempFileKey(null);
+                    op.setStatus(ImportStatus.SUCCESS);
+                } catch (Exception e) {
+                    op.setStatus(ImportStatus.FAILED);
+                }
+                importOperationRepository.save(op);
+            });
+        });
     }
 }

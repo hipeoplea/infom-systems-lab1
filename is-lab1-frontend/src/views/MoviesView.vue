@@ -5,20 +5,23 @@
         <div style="font-weight: 600; letter-spacing: 0.2px; color: #cbd5e1">
           Работа с фильмами
         </div>
-        <div class="ml-auto" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+        <div
+          class="ml-auto"
+          style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"
+        >
           <input
             v-model="currentUser"
             class="input"
             placeholder="Имя пользователя"
             style="max-width: 180px"
           />
-          <label style="display: flex; gap: 6px; align-items: center; color: #cbd5e1">
-            <input type="checkbox" v-model="adminMode" />
+          <label
+            style="display: flex; gap: 6px; align-items: center; color: #cbd5e1"
+          >
+            <input v-model="adminMode" type="checkbox" />
             Админ
           </label>
-          <button class="btn" @click="openHistory">
-            История импорта
-          </button>
+          <button class="btn" @click="openHistory">История импорта</button>
           <button class="btn btn-secondary" @click="triggerImport">
             Импорт JSON
           </button>
@@ -105,10 +108,16 @@
           <div>
             <div class="history-title">История импорта</div>
             <div class="history-subtitle">
-              {{ adminMode ? "Администратор: все операции" : `Пользователь: ${currentUser || "—"}` }}
+              {{
+                adminMode
+                  ? "Администратор: все операции"
+                  : `Пользователь: ${currentUser || "—"}`
+              }}
             </div>
           </div>
-          <button class="btn btn-secondary" @click="historyOpen = false">Закрыть</button>
+          <button class="btn btn-secondary" @click="historyOpen = false">
+            Закрыть
+          </button>
         </div>
 
         <div class="history-grid head">
@@ -116,6 +125,7 @@
           <div>Статус</div>
           <div>Пользователь</div>
           <div>Импортировано</div>
+          <div>Файл</div>
           <div>Время</div>
         </div>
         <div
@@ -129,14 +139,24 @@
           }"
         >
           <div class="mono">#{{ op.id }}</div>
-          <div class="badge" :class="op.status.toLowerCase()">{{ op.status }}</div>
+          <div class="badge" :class="op.status.toLowerCase()">
+            {{ op.status }}
+          </div>
           <div>{{ op.user }}</div>
           <div>{{ op.importedCount ?? "—" }}</div>
+          <div>
+            <button
+              v-if="op.fileKey"
+              class="btn btn-link"
+              @click="downloadFile(op)"
+            >
+              {{ op.fileName || "Файл" }}
+            </button>
+            <span v-else>—</span>
+          </div>
           <div class="mono">{{ formatDate(op.createdAt) }}</div>
         </div>
-        <div v-if="!history.length" class="history-empty">
-          Нет записей
-        </div>
+        <div v-if="!history.length" class="history-empty">Нет записей</div>
       </div>
     </div>
   </div>
@@ -252,6 +272,39 @@ export default {
       }
     };
 
+    const extractFilename = (disposition, fallback) => {
+      if (!disposition) return fallback;
+      const match = /filename\\*?=([^;]+)/i.exec(disposition);
+      if (match && match[1]) {
+        return decodeURIComponent(match[1].replace(/(^"|"$)/g, ""));
+      }
+      return fallback;
+    };
+
+    const downloadFile = async (op) => {
+      if (!op.fileKey) {
+        onError("Файл недоступен для этой операции");
+        return;
+      }
+      try {
+        const res = await api.downloadImportFile(op.id);
+        const fileName =
+          op.fileName ||
+          extractFilename(
+            res.headers["content-disposition"],
+            `import-${op.id}.json`,
+          );
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        onError(err.response?.data?.message || err.message);
+      }
+    };
+
     const formatDate = (val) => {
       if (!val) return "";
       const d = new Date(val);
@@ -357,6 +410,7 @@ export default {
       history,
       openHistory,
       formatDate,
+      downloadFile,
     };
   },
 };

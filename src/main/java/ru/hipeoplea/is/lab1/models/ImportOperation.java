@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 
@@ -36,8 +37,20 @@ public class ImportOperation {
             columnDefinition = "timestamp with time zone default now()")
     private OffsetDateTime createdAt;
 
+    private String fileKey;
+    private String tempFileKey;
+    private String fileName;
+    private Long fileSize;
+
     public ImportOperation(ImportStatus status, String user) {
         this.status = status;
         this.user = user;
+    }
+
+    @PrePersist
+    private void setCreatedAt() {
+        if (createdAt == null) {
+            createdAt = OffsetDateTime.now();
+        }
     }
 }

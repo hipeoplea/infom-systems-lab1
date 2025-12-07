@@ -6,9 +6,19 @@ services:
       POSTGRES_DB: ${DB_USER}
       POSTGRES_USER: ${DB_PASS}
       POSTGRES_PASSWORD: ${DB_NAME}
-    volumes:
-      - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+  minio:
+    image: minio/minio:RELEASE.2024-10-02T17-50-41Z
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
 volumes:
   pgdata:
+  minio-data:
