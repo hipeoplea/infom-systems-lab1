@@ -59,7 +59,8 @@ public class CacheStatsLoggingAspect {
         cacheManager.getCacheNames().forEach(name -> {
             try {
                 ObjectName on = new ObjectName(String.format(
-                        "javax.cache:type=CacheStatistics,CacheManager=%s,Cache=%s",
+                        "javax.cache:type=CacheStatistics,"
+                               + "CacheManager=%s,Cache=%s",
                         ObjectName.quote(cacheManager.getURI().toString()),
                         ObjectName.quote(name)));
                 if (!mBeanServer.isRegistered(on)) {

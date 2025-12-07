@@ -13,7 +13,7 @@
             style="max-width: 180px"
           />
           <label style="display: flex; gap: 6px; align-items: center; color: #cbd5e1">
-            <input type="checkbox" v-model="adminMode" />
+            <input v-model="adminMode" type="checkbox"/>
             Админ
           </label>
           <button class="btn" @click="openHistory">
@@ -267,7 +267,7 @@ export default {
       if (!disposition) return fallback;
       const match = /filename\\*?=([^;]+)/i.exec(disposition);
       if (match && match[1]) {
-        return decodeURIComponent(match[1].replace(/(^\"|\"$)/g, ""));
+        return decodeURIComponent(match[1].replace(/(^"|"$)/g, ""));
       }
       return fallback;
     };
