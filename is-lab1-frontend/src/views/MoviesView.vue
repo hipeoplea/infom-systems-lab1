@@ -5,20 +5,23 @@
         <div style="font-weight: 600; letter-spacing: 0.2px; color: #cbd5e1">
           Работа с фильмами
         </div>
-        <div class="ml-auto" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+        <div
+          class="ml-auto"
+          style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"
+        >
           <input
             v-model="currentUser"
             class="input"
             placeholder="Имя пользователя"
             style="max-width: 180px"
           />
-          <label style="display: flex; gap: 6px; align-items: center; color: #cbd5e1">
-            <input v-model="adminMode" type="checkbox"/>
+          <label
+            style="display: flex; gap: 6px; align-items: center; color: #cbd5e1"
+          >
+            <input v-model="adminMode" type="checkbox" />
             Админ
           </label>
-          <button class="btn" @click="openHistory">
-            История импорта
-          </button>
+          <button class="btn" @click="openHistory">История импорта</button>
           <button class="btn btn-secondary" @click="triggerImport">
             Импорт JSON
           </button>
@@ -105,10 +108,16 @@
           <div>
             <div class="history-title">История импорта</div>
             <div class="history-subtitle">
-              {{ adminMode ? "Администратор: все операции" : `Пользователь: ${currentUser || "—"}` }}
+              {{
+                adminMode
+                  ? "Администратор: все операции"
+                  : `Пользователь: ${currentUser || "—"}`
+              }}
             </div>
           </div>
-          <button class="btn btn-secondary" @click="historyOpen = false">Закрыть</button>
+          <button class="btn btn-secondary" @click="historyOpen = false">
+            Закрыть
+          </button>
         </div>
 
         <div class="history-grid head">
@@ -130,7 +139,9 @@
           }"
         >
           <div class="mono">#{{ op.id }}</div>
-          <div class="badge" :class="op.status.toLowerCase()">{{ op.status }}</div>
+          <div class="badge" :class="op.status.toLowerCase()">
+            {{ op.status }}
+          </div>
           <div>{{ op.user }}</div>
           <div>{{ op.importedCount ?? "—" }}</div>
           <div>
@@ -145,9 +156,7 @@
           </div>
           <div class="mono">{{ formatDate(op.createdAt) }}</div>
         </div>
-        <div v-if="!history.length" class="history-empty">
-          Нет записей
-        </div>
+        <div v-if="!history.length" class="history-empty">Нет записей</div>
       </div>
     </div>
   </div>
@@ -281,7 +290,10 @@ export default {
         const res = await api.downloadImportFile(op.id);
         const fileName =
           op.fileName ||
-          extractFilename(res.headers["content-disposition"], `import-${op.id}.json`);
+          extractFilename(
+            res.headers["content-disposition"],
+            `import-${op.id}.json`,
+          );
         const url = window.URL.createObjectURL(new Blob([res.data]));
         const link = document.createElement("a");
         link.href = url;
